@@ -76,16 +76,17 @@ class BaseNoticeService extends BaseService {
             //     var url = _this.bindModel.prop['__listUrl'];
             //     location.href = url;
             // },
-            moveEdit(p_evt_idx) {
-                var url = _this.bindModel.prop['__formUrl'];
-                location.href = url +'?mode=EDIT&evt_idx='+ p_evt_idx;
-            },
+            // moveEdit(p_evt_idx) {
+            //     var url = _this.bindModel.prop['__formUrl'];
+            //     location.href = url +'?mode=EDIT&evt_idx='+ p_evt_idx;
+            // },
             // moveForm() {
             //     var url = _this.bindModel.prop['__formUrl'];
             //     location.href = url;
             // },
             procCreate: function() {
-                _this.bindModel.create.execute();
+                // _this.bindModel.create.execute();
+                console.log(111)
             },
             procRead: function(ntc_idx) { 
                 _this.bindModel.columns['ntc_idx'].value = ntc_idx;

@@ -9,41 +9,51 @@ class NoticeAdminService extends BaseNoticeService {
 
         this.command = {
             create:     {
-                cbBegin(bindCmd) { _this.bindModel.items['cmd'].value = 'CREATE'; },
-                cbEnd(p_entity) {
-                    if (p_entity['return'] < 0) return alert('등록 처리가 실패 하였습니다. Code : ' + p_entity['return']);
-                    // _this.bindModel.fn.moveList();  // 개선함
-                },
+                // cbBegin(bindCmd) { _this.bindModel.items['cmd'].value = 'CREATE'; },
+                // cbEnd(p_entity) {
+                //     if (p_entity['return'] < 0) return alert('등록 처리가 실패 하였습니다. Code : ' + p_entity['return']);
+                //     // _this.bindModel.fn.moveList();  // 개선함
+                // },
             },
             read:       {
                 outputOption: 3,
-                cbBegin(bindCmd) { 
-                    var ntc_idx= bindCmd._model.columns['ntc_idx'].value;
-                    bindCmd.url = `data/read${ntc_idx}.json`;
-                    bindCmd._model.columns._area_form.value = '';  // form show
+                cbBegin(cmd) { 
+                    var ntc_idx= cmd._model.columns['ntc_idx'].value;
+                    cmd.url = `data/read${ntc_idx}.json`;
+                    cmd._model.columns._area_form.value = '';  // form show
                     // _this.bindModel.items['cmd'].value = 'READ';
                 },
-                cbEnd(p_entity) {
-                    if (p_entity['return'] < 0) return alert('조회 처리가 실패 하였습니다. Code : ' + p_entity['return']);
-                }
+                // cbEnd(p_entity) {
+                //     if (p_entity['return'] < 0) return alert('조회 처리가 실패 하였습니다. Code : ' + p_entity['return']);
+                // }
             },
             update:     {
-                cbBegin(bindCmd) { 
+                cbBegin(cmd) { 
                     // _this.bindModel.items['cmd'].value = 'UPDATE'; 
-                    bindCmd._model.columns._area_form.value = '';   // form show
+                    cmd._model.columns._area_form.value = '';   // form show
                 },
-                cbEnd(p_entity) {
-                    if (p_entity['return'] < 0) return alert('수정 처리가 실패 하였습니다. Code : ' + p_entity['return']);
+                cbBind(bind, cmd, setup) {
+                    console.warn('주의 : 테스트 서버 경로로 전송하지만 반영하지 않습니다. ');
+                    console.warn(bind.getValue());
+
+                },
+                cbEnd(status, cmd, res) {
+                    // if (p_entity['return'] < 0) return alert('수정 처리가 실패 하였습니다. Code : ' + p_entity['return']);
                     alert('수정 처리가 되었습니다.');
                     // _this.bindModel.read.execute();
                 }
             },
             delete:     {
-                cbBegin(bindCmd) {
-                    // bindCmd.url = 'data/read.json';
+                cbBegin(cmd) {
+                    // cmd.url = 'data/read.json';
                     // _this.bindModel.items['cmd'].value = 'DELETE'; 
                 },
-                cbValid(p_valid) { return confirm('삭제 하시겠습니까.?'); },
+                cbValid(valid, cmd) { 
+                    if (confirm('삭제 하시겠습니까.?')) return true;
+                },
+                cbBind(bind, cmd, setup) {
+                    console.warn('주의 : 테스트 서버 경로로 전송하지만 반영하지 않습니다.');
+                },
                 cbEnd(status, cmd, res) {
                     // if (p_entity['return'] < 0) return alert('삭제 처리가 실패 하였습니다. Result Code : ' + p_entity['return']);
                     if (res) {
@@ -54,11 +64,11 @@ class NoticeAdminService extends BaseNoticeService {
             },
             list:       {
                 outputOption: 1,
-                cbBegin(bindCmd) {
-                    bindCmd._model.columns._area_form.value = 'd-none';
+                cbBegin(cmd) {
+                    cmd._model.columns._area_form.value = 'd-none';
                     // _this.bindModel.items['cmd'].value = 'LIST'; 
                 },
-                cbOutput(outputs, cmd, res) {
+                cbOutput(outs, cmd, res) {
                     // if (global.isLog) console.log("[Service] list.cbOutput() : 목록출력");
     
                     // var entity = p_result['table'];
@@ -72,8 +82,8 @@ class NoticeAdminService extends BaseNoticeService {
                     _this.bindModel.columns['_area_tbody'].value   = _template(res.data);
                     // _this.bindModel.items['_area_page'].value   = page.parser(row_total);
                 },
-                cbEnd(p_result) {
-                    if (p_result['return'] < 0) return alert('목록조회 처리가 실패 하였습니다. Code : ' + p_result['return']);
+                cbEnd(status, cmd, res) {
+                    // if (p_result['return'] < 0) return alert('목록조회 처리가 실패 하였습니다. Code : ' + p_result['return']);
                 }
             }
         };

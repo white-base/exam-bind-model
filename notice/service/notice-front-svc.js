@@ -7,14 +7,14 @@ class NoticeFrontService extends BaseNoticeService {
             read:       {
                 outputOption: 3,
                 cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'READ'; },
-                cbEnd(p_entity) {
-                    if (p_entity['return'] < 0) return alert('조회 처리가 실패 하였습니다. Code : ' + p_entity['return']);
+                cbEnd(status, cmd, res) {
+                    // if (p_entity['return'] < 0) return alert('조회 처리가 실패 하였습니다. Code : ' + p_entity['return']);
                 }
             },  
             list:       {
                 outputOption: 1,
                 cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'LIST'; },
-                cbOutput(p_result) {
+                cbOutput(outs, cmd, res) {
                     if (global.isLog) console.log("[Service] list.cbOutput() : 목록출력");
     
                     var entity = p_result['table'];
@@ -27,8 +27,8 @@ class NoticeFrontService extends BaseNoticeService {
                     _this.bindModel.items['_area_tbody'].value   = _template(entity);
                     _this.bindModel.items['_area_page'].value   = page.parser(row_total);
                 },
-                cbEnd(p_result) {
-                    if (p_result['return'] < 0) return alert('목록조회 처리가 실패 하였습니다. Code : ' + p_result['return']);
+                cbEnd(status, cmd, res) {
+                    // if (p_result['return'] < 0) return alert('목록조회 처리가 실패 하였습니다. Code : ' + p_result['return']);
                 }
             },
         };  
