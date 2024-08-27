@@ -12,7 +12,7 @@ class NoticeAdminService extends BaseNoticeService {
                 cbBegin(bindCmd) { _this.bindModel.items['cmd'].value = 'CREATE'; },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('등록 처리가 실패 하였습니다. Code : ' + p_entity['return']);
-                    _this.bindModel.fn.moveList();  // 개선함
+                    // _this.bindModel.fn.moveList();  // 개선함
                 },
             },
             read:       {
@@ -20,6 +20,7 @@ class NoticeAdminService extends BaseNoticeService {
                 cbBegin(bindCmd) { 
                     var ntc_idx= bindCmd._model.columns['ntc_idx'].value;
                     bindCmd.url = `data/read${ntc_idx}.json`;
+                    bindCmd._model.columns._area_form.value = '';  // form show
                     // _this.bindModel.items['cmd'].value = 'READ';
                 },
                 cbEnd(p_entity) {
@@ -29,6 +30,7 @@ class NoticeAdminService extends BaseNoticeService {
             update:     {
                 cbBegin(bindCmd) { 
                     // _this.bindModel.items['cmd'].value = 'UPDATE'; 
+                    bindCmd._model.columns._area_form.value = '';   // form show
                 },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('수정 처리가 실패 하였습니다. Code : ' + p_entity['return']);
@@ -42,15 +44,18 @@ class NoticeAdminService extends BaseNoticeService {
                     // _this.bindModel.items['cmd'].value = 'DELETE'; 
                 },
                 cbValid(p_valid) { return confirm('삭제 하시겠습니까.?'); },
-                cbEnd(p_entity) {
-                    if (p_entity['return'] < 0) return alert('삭제 처리가 실패 하였습니다. Result Code : ' + p_entity['return']);
-                    // _this.bindModel.fn.moveList();  // 개선함
+                cbEnd(status, cmd, res) {
+                    // if (p_entity['return'] < 0) return alert('삭제 처리가 실패 하였습니다. Result Code : ' + p_entity['return']);
+                    if (res) {
+                        alert('삭제 되었습니다.');
+                        _this.bindModel.fn.procList();  // 개선함
+                    }
                 }
             },
             list:       {
                 outputOption: 1,
                 cbBegin(bindCmd) {
-                    
+                    bindCmd._model.columns._area_form.value = 'd-none';
                     // _this.bindModel.items['cmd'].value = 'LIST'; 
                 },
                 cbOutput(outputs, cmd, res) {
@@ -74,8 +79,9 @@ class NoticeAdminService extends BaseNoticeService {
         };
         
         this.mapping = {
-            _area_temp:     { list:     'misc' },    // 묶음의 용도
+            _area_temp:      { list:     'misc' },    // 묶음의 용도
             _area_tbody:     { list:     'misc' },    // 묶음의 용도
+            _area_form:      { list:     'misc' },    // 묶음의 용도
             // _area_page:     { list:     'etc' },    // 묶음의 용도
             // _txt_sumCnt:    { list:     'etc' },    // 묶음의 용도
             // cmd:            { Array:    'bind' },

@@ -13,7 +13,8 @@ class BaseNoticeService extends BaseService {
             // __mode:         '',
             // view
             _area_temp:     { selector: { key: '#area-temp'+ _SUFF,         type: 'html' } },
-            _area_tbody:     { selector: { key: '#area-tbody'+ _SUFF,        type: 'html' } },
+            _area_tbody:    { selector: { key: '#area-tbody'+ _SUFF,        type: 'html' } },
+            _area_form:     { selector: { key: '#class-form'+ _SUFF,        type: 'prop.class' } },
             // _area_page:     { selector: { key: '#s-area-page'+ _SUFF,       type: 'html' } },
             // _txt_sumCnt:    { selector: { key: '#s-txt-sumCnt'+ _SUFF,      type: 'text' } },
             // bind
@@ -95,6 +96,9 @@ class BaseNoticeService extends BaseService {
             },
             procUpdate: function() { 
                 _this.bindModel.command['update'].execute();
+            },
+            procList: function() { 
+                _this.bindModel.command['list'].execute();
             }
         };
     
