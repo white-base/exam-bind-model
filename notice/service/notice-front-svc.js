@@ -32,19 +32,18 @@ class NoticeFrontService extends BaseNoticeService {
                 }
             },
         };  
-                        
+
         this.mapping = {
-            _temp_list:     { list:     'etc' },    // 묶음의 용도
-            _area_list:     { list:     'etc' },    // 묶음의 용도
-            _area_page:     { list:     'etc' },    // 묶음의 용도
-            cmd:            { $all:     'bind' },
-            keyword:        { list:     'bind' },
-            page_size:      { list:     'bind' },
-            page_count:     { list:     'bind' },
-            sort_cd:        { list:     'bind' },
-            evt_idx:        { read:     'bind' },
+            // _temp_list:     { list:     'etc' },    // 묶음의 용도
+            // _area_list:     { list:     'etc' },    // 묶음의 용도
+            // _area_page:     { list:     'etc' },    // 묶음의 용도
+            // cmd:            { $all:     'bind' },
+            // keyword:        { list:     'bind' },
+            // page_size:      { list:     'bind' },
+            // page_count:     { list:     'bind' },
+            // sort_cd:        { list:     'bind' },
+            ntc_idx:        { read:     'bind' },
             title:          { read:     'output' },
-            writer:         { read:     'output' },
             contents:       { read:     'output' },
             create_dt:      { read:     'output' },
         };

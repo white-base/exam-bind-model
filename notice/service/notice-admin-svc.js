@@ -3,6 +3,10 @@ class NoticeAdminService extends BaseNoticeService {
     constructor() {
         super();
 
+        var _this       = this;
+        var _template   = null;
+
+
         this.command = {
             create:     {
                 cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'CREATE'; },
@@ -36,19 +40,22 @@ class NoticeAdminService extends BaseNoticeService {
             },
             list:       {
                 outputOption: 1,
-                cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'LIST'; },
-                cbOutput(p_result) {
-                    if (global.isLog) console.log("[Service] list.cbOutput() : 목록출력");
+                cbBegin(p_bindCommand) { 
+                    // _this.bindModel.items['cmd'].value = 'LIST'; 
+                },
+                cbOutput(outputs, cmd, res) {
+                    // if (global.isLog) console.log("[Service] list.cbOutput() : 목록출력");
     
-                    var entity = p_result['table'];
-                    var row_total   = entity['row_total'];
+                    // var entity = p_result['table'];
+                    // var row_total   = entity['row_total'];
     
                     if (_template === null) {
-                        _template = Handlebars.compile( _this.bindModel.items['_temp_list'].value ); 
+                        _template = Handlebars.compile( _this.bindModel.columns['_temp_list'].value ); 
+                        // _template = Handlebars.compile($('#temp-list').html() ); 
                     }
-                    _this.bindModel.items['_txt_sumCnt'].value  = row_total;
-                    _this.bindModel.items['_area_list'].value   = _template(entity);
-                    _this.bindModel.items['_area_page'].value   = page.parser(row_total);
+                    // _this.bindModel.items['_txt_sumCnt'].value  = row_total;
+                    _this.bindModel.columns['_area_list'].value   = _template(res.data);
+                    // _this.bindModel.items['_area_page'].value   = page.parser(row_total);
                 },
                 cbEnd(p_result) {
                     if (p_result['return'] < 0) return alert('목록조회 처리가 실패 하였습니다. Code : ' + p_result['return']);
@@ -57,22 +64,20 @@ class NoticeAdminService extends BaseNoticeService {
         };
         
         this.mapping = {
-            _temp_list:     { list:     'etc' },    // 묶음의 용도
-            _area_list:     { list:     'etc' },    // 묶음의 용도
-            _area_page:     { list:     'etc' },    // 묶음의 용도
-            _txt_sumCnt:    { list:     'etc' },    // 묶음의 용도
-            cmd:            { Array:    'bind' },
-            keyword:        { list:     'bind' },
-            page_size:      { list:     'bind' },
-            page_count:     { list:     'bind' },
-            sort_cd:        { list:     'bind' },
-            evt_idx:        { read:     'bind',     delete:     'bind',            update:  'bind' },
+            _temp_list:     { list:     'misc' },    // 묶음의 용도
+            _area_list:     { list:     'misc' },    // 묶음의 용도
+            // _area_page:     { list:     'etc' },    // 묶음의 용도
+            // _txt_sumCnt:    { list:     'etc' },    // 묶음의 용도
+            // cmd:            { Array:    'bind' },
+            // keyword:        { list:     'bind' },
+            // page_size:      { list:     'bind' },
+            // page_count:     { list:     'bind' },
+            // sort_cd:        { list:     'bind' },
+            ntc_idx:        { read:     'bind',     delete:     'bind',            update:  'bind' },
             title:          { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
-            writer:         { read:     'output',   create:     'bind',            update:  'bind' },
-            begin_dt:       { read:     'output',   create:     'bind',            update:  'bind' },
-            close_dt:       { read:     'output',   create:     'bind',            update:  'bind' },
             contents:       { read:     'output',   create:     'bind',            update:  'bind' },
-            active_yn:      { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
+            top_yn:         { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
+            active_cd:      { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
         };
 
     }    
