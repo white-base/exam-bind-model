@@ -9,30 +9,6 @@
 </head>
 <body>
 
-<div class="modal" id="myModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title">Modal Heading</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <!-- Modal body -->
-      <div class="modal-body">
-        Modal body..
-      </div>
-
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 <div class="container mt-3">
   <h2>Basic Table</h2>
   <p>The .table class adds basic styling (light padding and horizontal dividers) to a table:</p>            
@@ -44,17 +20,17 @@
         <th>작성일</th>
       </tr>
     </thead>
-    <tbody id="t-body">
+    <tbody id="area-tbody">
       <tr>
         <td colspan="3">내용이 없습니다.</td>
       </tr>
     </tbody>
 
     <!-- 템플릿 영역 -->
-    <script id="temp-list" type="text/x-handlebars-template">
+    <script id="area-temp" type="text/x-handlebars-template">
       {{#rows}}
       <tr>
-        <td><a href="javascript:ntc.fn.moveEdit('{{ntc_idx}}');" class='btnNormal'>{{title}}</a></td>
+        <td><a href="javascript:bm.fn.procRead('{{ntc_idx}}');" class='btnNormal'>{{title}}</a></td>
         <td>{{active_cd}}</td>
         <td>{{create_dt}}</td>			            	
       </tr>
@@ -63,13 +39,13 @@
 
   </table>
 
-  <ul class="pagination justify-content-center">
+  <!-- <ul class="pagination justify-content-center">
     <li class="page-item"><a class="page-link" href="#">Previous</a></li>
     <li class="page-item"><a class="page-link" href="#">1</a></li>
     <li class="page-item active"><a class="page-link" href="#">2</a></li>
     <li class="page-item"><a class="page-link" href="#">3</a></li>
     <li class="page-item"><a class="page-link" href="#">Next</a></li>
-  </ul>
+  </ul> -->
 
 
     <!-- <form class="d-none"> -->
@@ -116,31 +92,32 @@
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
-<script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.js?aa=aa"></script>
+<script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.js"></script>
 <script src="service/base-svc.js"></script>
 <script src="service/base-notice-svc.js"></script>
 <script src="service/notice-admin-svc.js"></script>
 <script>
 	// ##################################################
-	var ntc = new _L.BindModel(new NoticeAdminService());
+	var bm = new _L.BindModel(new NoticeAdminService());
 	
 	// 콜백 url 설정
-  ntc.url = 'data/read.json';
+  // bm.url = 'data/read.json';
 
+  bm.cmd['list'].url = 'data/list.json';
 	// 이벤트 바인딩
-	// $('#btn_Search').click(ntc.fn.searchList);
-	// $('#sel_Pagesize').change(ntc.fn.changePagesize);
-	// $('#btn_Reset').click(ntc.fn.resetForm);
+	// $('#btn_Search').click(bm.fn.searchList);
+	// $('#sel_Pagesize').change(bm.fn.changePagesize);
+	// $('#btn_Reset').click(bm.fn.resetForm);
 	
-  $('#btn_Insert').click(ntc.fn.procCreate);
+  $('#btn_Insert').click(bm.fn.procCreate);
   // $('#btn_Insert').click(()=>alert(22));
 	
-  $('#btn_Update').click(ntc.fn.moveForm);
-	$('#btn_Delete').click(ntc.fn.moveForm);
+  $('#btn_Update').click(bm.fn.procUpdate);
+	$('#btn_Delete').click(bm.fn.procDelete);
 
 	$(document).ready(function () {
-      // ntc.init();
-      ntc.cmd['list'].execute();
+      bm.init();
+      bm.cmd['list'].execute();
     });
 </script>
 

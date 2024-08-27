@@ -21,10 +21,10 @@ class NoticeFrontService extends BaseNoticeService {
                     var row_total   = entity['row_total'];
     
                     if (_template === null) {
-                        _template = Handlebars.compile( _this.bindModel.items['_temp_list'].value ); 
+                        _template = Handlebars.compile( _this.bindModel.items['_area_temp'].value ); 
                     }
                     _this.bindModel.items['_txt_sumCnt'].value  = row_total;
-                    _this.bindModel.items['_area_list'].value   = _template(entity);
+                    _this.bindModel.items['_area_tbody'].value   = _template(entity);
                     _this.bindModel.items['_area_page'].value   = page.parser(row_total);
                 },
                 cbEnd(p_result) {
@@ -34,8 +34,8 @@ class NoticeFrontService extends BaseNoticeService {
         };  
 
         this.mapping = {
-            // _temp_list:     { list:     'etc' },    // 묶음의 용도
-            // _area_list:     { list:     'etc' },    // 묶음의 용도
+            // _area_temp:     { list:     'etc' },    // 묶음의 용도
+            // _area_tbody:     { list:     'etc' },    // 묶음의 용도
             // _area_page:     { list:     'etc' },    // 묶음의 용도
             // cmd:            { $all:     'bind' },
             // keyword:        { list:     'bind' },

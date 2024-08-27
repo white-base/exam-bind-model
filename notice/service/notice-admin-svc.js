@@ -9,7 +9,7 @@ class NoticeAdminService extends BaseNoticeService {
 
         this.command = {
             create:     {
-                cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'CREATE'; },
+                cbBegin(bindCmd) { _this.bindModel.items['cmd'].value = 'CREATE'; },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('등록 처리가 실패 하였습니다. Code : ' + p_entity['return']);
                     _this.bindModel.fn.moveList();  // 개선함
@@ -17,30 +17,40 @@ class NoticeAdminService extends BaseNoticeService {
             },
             read:       {
                 outputOption: 3,
-                cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'READ'; },
+                cbBegin(bindCmd) { 
+                    var ntc_idx= bindCmd._model.columns['ntc_idx'].value;
+                    bindCmd.url = `data/read${ntc_idx}.json`;
+                    // _this.bindModel.items['cmd'].value = 'READ';
+                },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('조회 처리가 실패 하였습니다. Code : ' + p_entity['return']);
                 }
             },
             update:     {
-                cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'UPDATE'; },
+                cbBegin(bindCmd) { 
+                    // _this.bindModel.items['cmd'].value = 'UPDATE'; 
+                },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('수정 처리가 실패 하였습니다. Code : ' + p_entity['return']);
                     alert('수정 처리가 되었습니다.');
-                    _this.bindModel.read.execute();
+                    // _this.bindModel.read.execute();
                 }
             },
             delete:     {
-                cbBegin(p_bindCommand) { _this.bindModel.items['cmd'].value = 'DELETE'; },
+                cbBegin(bindCmd) {
+                    // bindCmd.url = 'data/read.json';
+                    // _this.bindModel.items['cmd'].value = 'DELETE'; 
+                },
                 cbValid(p_valid) { return confirm('삭제 하시겠습니까.?'); },
                 cbEnd(p_entity) {
                     if (p_entity['return'] < 0) return alert('삭제 처리가 실패 하였습니다. Result Code : ' + p_entity['return']);
-                    _this.bindModel.fn.moveList();  // 개선함
+                    // _this.bindModel.fn.moveList();  // 개선함
                 }
             },
             list:       {
                 outputOption: 1,
-                cbBegin(p_bindCommand) { 
+                cbBegin(bindCmd) {
+                    
                     // _this.bindModel.items['cmd'].value = 'LIST'; 
                 },
                 cbOutput(outputs, cmd, res) {
@@ -50,11 +60,11 @@ class NoticeAdminService extends BaseNoticeService {
                     // var row_total   = entity['row_total'];
     
                     if (_template === null) {
-                        _template = Handlebars.compile( _this.bindModel.columns['_temp_list'].value ); 
+                        _template = Handlebars.compile( _this.bindModel.columns['_area_temp'].value ); 
                         // _template = Handlebars.compile($('#temp-list').html() ); 
                     }
                     // _this.bindModel.items['_txt_sumCnt'].value  = row_total;
-                    _this.bindModel.columns['_area_list'].value   = _template(res.data);
+                    _this.bindModel.columns['_area_tbody'].value   = _template(res.data);
                     // _this.bindModel.items['_area_page'].value   = page.parser(row_total);
                 },
                 cbEnd(p_result) {
@@ -64,8 +74,8 @@ class NoticeAdminService extends BaseNoticeService {
         };
         
         this.mapping = {
-            _temp_list:     { list:     'misc' },    // 묶음의 용도
-            _area_list:     { list:     'misc' },    // 묶음의 용도
+            _area_temp:     { list:     'misc' },    // 묶음의 용도
+            _area_tbody:     { list:     'misc' },    // 묶음의 용도
             // _area_page:     { list:     'etc' },    // 묶음의 용도
             // _txt_sumCnt:    { list:     'etc' },    // 묶음의 용도
             // cmd:            { Array:    'bind' },

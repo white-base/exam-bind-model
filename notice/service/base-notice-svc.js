@@ -12,8 +12,8 @@ class BaseNoticeService extends BaseService {
             // __isGetLoad:    true,
             // __mode:         '',
             // view
-            _temp_list:     { selector: { key: '#temp-list'+ _SUFF,     type: 'html' } },
-            _area_list:     { selector: { key: '#t-body'+ _SUFF,        type: 'html' } },
+            _area_temp:     { selector: { key: '#area-temp'+ _SUFF,         type: 'html' } },
+            _area_tbody:     { selector: { key: '#area-tbody'+ _SUFF,        type: 'html' } },
             // _area_page:     { selector: { key: '#s-area-page'+ _SUFF,       type: 'html' } },
             // _txt_sumCnt:    { selector: { key: '#s-txt-sumCnt'+ _SUFF,      type: 'text' } },
             // bind
@@ -75,20 +75,26 @@ class BaseNoticeService extends BaseService {
             //     var url = _this.bindModel.prop['__listUrl'];
             //     location.href = url;
             // },
-            // moveEdit(p_evt_idx) {
-            //     var url = _this.bindModel.prop['__formUrl'];
-            //     location.href = url +'?mode=EDIT&evt_idx='+ p_evt_idx;
-            // },
+            moveEdit(p_evt_idx) {
+                var url = _this.bindModel.prop['__formUrl'];
+                location.href = url +'?mode=EDIT&evt_idx='+ p_evt_idx;
+            },
             // moveForm() {
             //     var url = _this.bindModel.prop['__formUrl'];
             //     location.href = url;
             // },
             procCreate: function() {
-                _this.bindModel.create.execute(); 
+                _this.bindModel.create.execute();
             },
-            procRead: function(p_evt_idx) { 
-                _this.bindModel.items['evt_idx'].value = ParamGet2JSON(location.href).evt_idx;
-                _this.bindModel.read.execute(); 
+            procRead: function(ntc_idx) { 
+                _this.bindModel.columns['ntc_idx'].value = ntc_idx;
+                _this.bindModel.command['read'].execute();
+            },
+            procDelete: function() {
+                _this.bindModel.command['delete'].execute();
+            },
+            procUpdate: function() { 
+                _this.bindModel.command['update'].execute();
             }
         };
     
