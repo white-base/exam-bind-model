@@ -47,49 +47,49 @@
     <li class="page-item"><a class="page-link" href="#">Next</a></li>
   </ul> -->
 
-
-    <form id="class-form" class="d-none">
+  <div id="class-form" class="d-none">
+    <form>
       <div class="form-group">
           <label for="title">제목</label>
           <input type="text" class="form-control" id="title">
       </div>
-      
-      
       <div class="form-group">
           <label for="contents">내용</label>
           <textarea class="form-control" id="contents" rows="3"></textarea>
       </div>
-      
       <div class="row">
         <div class="col">
             <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="check1" name="top_yn" value="Y" checked>
-                <label class="form-check-label" for="check1">최상위 공지</label>
+                <input type="checkbox" class="form-check-input" id="check1" name="top_yn" value="Y">
+                <label class="form-check-label" for="check1">최상위 공지.</label>
             </div>
         </div>
         <div class="col">
             <div class="form-check">
-                <input type="radio" class="form-check-input" name="active_cd" value="D" checked>
+                <input type="radio" class="form-check-input" id="radio1" name="active_cd" value="D" checked>
                 <label class="form-check-label" for="radio1">대기</label>
             </div>
             <div class="form-check">
-                <input type="radio" class="form-check-input" name="active_cd" value="A">
+                <input type="radio" class="form-check-input" id="radio2" name="active_cd" value="A">
                 <label class="form-check-label" for="radio2">활성화</label>
             </div>
             <div class="form-check">
-                <input type="radio" class="form-check-input" name="active_cd" value="H">
-                <label class="form-check-label">숨김</label>
+                <input type="radio" class="form-check-input" id="radio3" name="active_cd" value="H">
+                <label class="form-check-label" for="radio3">숨김</label>
             </div>        
         </div>
       </div>
+    </form>
+    <div id="area_edit">
       <button type="submit" class="btn btn-primary mt-3" id="btn_Update">수정</button>
       <button type="submit" class="btn btn-primary mt-3" id="btn_Delete">삭제</button>
-    </form>
-    <!-- <button type="submit" class="btn btn-primary mt-3" id="btn_Insert">등록</button> -->
+    </div>
+  </div>
 </div>
 
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
+<!-- <script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.min.js"></script> -->
+<!-- <script src="/dist/bindmodel.pack.min.js?aa"></script> -->
 <script src="/dist/bindmodel.pack.js?aa"></script>
 <script src="service/base-svc.js"></script>
 <script src="service/base-notice-svc.js"></script>
@@ -97,29 +97,17 @@
 <script>
 	// ##################################################
 	var bm = new _L.BindModel(new NoticeAdminService());
-	
-	// 콜백 url 설정
-  // bm.url = 'data/read.json';
 
-  bm.cmd['list'].url = 'data/list.json';
-	// 이벤트 바인딩
-	// $('#btn_Search').click(bm.fn.searchList);
-	// $('#sel_Pagesize').change(bm.fn.changePagesize);
-	// $('#btn_Reset').click(bm.fn.resetForm);
-	
-  $('#btn_Insert').click(bm.fn.procCreate);
-  // $('#btn_Insert').click(()=>alert(22));
+  bm.url = 'data/list.json';  // base url
 	
   $('#btn_Update').click(bm.fn.procUpdate);
 	$('#btn_Delete').click(bm.fn.procDelete);
 
 	$(document).ready(function () {
-      bm.init();
-      // bm.cmd['list'].execute();
-      bm.fn.procList();
-    });
+    bm.init();
+    bm.fn.procList();
+  });
 </script>
-
 </body>
 </html>
 
