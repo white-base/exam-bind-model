@@ -12,29 +12,30 @@ class NoticeAdminService extends BaseNoticeService {
             read:       {
                 outputOption: 3,
                 cbBegin(cmd) { 
-                    var ntc_idx= cmd._model.columns['ntc_idx'].value;
-                    cmd.url = `data/read${ntc_idx}.json`;
+                    // var ntc_idx= cmd._model.columns['ntc_idx'].value;
+                    // cmd.url = `data/read${ntc_idx}.json`;  restful q방식
+                    cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
             },
             update:     {
                 cbBind(bind, cmd, setup) {
-                    console.warn('주의 : 테스트 서버 경로로 전송하지만 반영하지 않습니다. ', setup.data);
+                    console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
                 cbEnd(status, cmd, res) {
-                    alert('수정 처리가 되었습니다.');
+                    if (res) alert('It has been modified.');
                 }
             },
             delete:     {
                 cbValid(valid, cmd) { 
-                    if (confirm('삭제 하시겠습니까.?')) return true;
+                    if (confirm('Are you sure you want to delete it?')) return true;
                 },
                 cbBind(bind, cmd, setup) {
-                    console.warn('주의 : 테스트 서버 경로로 전송하지만 반영하지 않습니다.', setup.data);
+                    console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
                 cbEnd(status, cmd, res) {
                     if (res) {
-                        alert('삭제 되었습니다.');
+                        alert('The post has been deleted.');
                         _this.bindModel.fn.procList();
                     }
                 }
@@ -54,14 +55,15 @@ class NoticeAdminService extends BaseNoticeService {
         };
         
         this.mapping = {
-            _area_temp:      { list:     'misc' },
-            _area_tbody:     { list:     'misc' },
-            _area_form:      { list:     'misc' },
+            _area_temp:     { list:     'misc' },
+            _area_tbody:    { list:     'misc' },
+            _area_form:     { list:     'misc' },
             ntc_idx:        { read:     'bind',     delete:     'bind',            update:  'bind' },
             title:          { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
             contents:       { read:     'output',   create:     'bind',            update:  'bind' },
             top_yn:         { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
             active_cd:      { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
+            create_dt:      { read:     'output' },
         };
 
     }    

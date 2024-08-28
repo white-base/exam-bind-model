@@ -7,9 +7,10 @@ class BaseNoticeService extends BaseService {
 
         this.items = {
             // misc
-            _area_temp: { selector: { key: '#area-temp'+ _SUFF,         type: 'html' } },
-            _area_tbody:{ selector: { key: '#area-tbody'+ _SUFF,        type: 'html' } },
-            _area_form: { selector: { key: '#class-form'+ _SUFF,        type: 'prop.class' } },
+            _area_temp: { selector: { key: `#area-temp${_SUFF}`,    type: 'html' } },
+            _area_tbody:{ selector: { key: `#area-tbody${_SUFF}`,   type: 'html' } },
+            _area_form: { selector: { key: `#class-form${_SUFF}`,   type: 'prop.class' } },
+            _index:     0,
             // valid, bind, output
             ntc_idx:        '',
             title:      { 
@@ -18,7 +19,7 @@ class BaseNoticeService extends BaseService {
             },
             contents:   { selector: { key: '#contents'+ _SUFF,     type: 'value' } },
             top_yn:     { 
-                selector: { key: 'input[name=top_yn'+_SUFF+']',  type: 'none' },
+                selector: { key: `input[name=top_yn${_SUFF}]`,      type: 'none' },
                 setFilter: function (val) { 
                     $('input[name=top_yn'+_SUFF+']').prop('checked', val == 'Y' ? true : false);
                 },
@@ -35,11 +36,15 @@ class BaseNoticeService extends BaseService {
                     return $('input[name=active_cd'+_SUFF+']:checked').val();
                 },
             },
+            create_dt:  {
+                selector: { key: `#create_dt${_SUFF}`,  type: 'text' }
+            }
         };
         
         this.fn = {
-            procRead(ntc_idx) { 
-                _this.bindModel.columns['ntc_idx'].value = ntc_idx;
+            procRead(index) { 
+                // _this.bindModel.columns['ntc_idx'].value = ntc_idx;
+                _this.bindModel.items._index = index;
                 _this.bindModel.command['read'].execute();
             },
             procDelete() {

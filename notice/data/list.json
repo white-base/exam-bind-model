@@ -2,17 +2,21 @@
 	"rows": [
 		{
 			"ntc_idx": 1,
-			"title": "제목입니다.1",
+			"title": "This is the first notice post.",
 			"top_yn": "Y",
 			"active_cd": "A",
-            "create_dt": "2014-01-01"
+            "create_dt": "2014-01-01",
+			"contents": "This is the content of the first post...."
+
 		},
         {
 			"ntc_idx": 2,
-			"title": "제목입니다.2",
+			"title": "This is the second notice post.",
 			"top_yn": "N",
 			"active_cd": "H",
-            "create_dt": "2014-01-02"
+            "create_dt": "2014-01-02",
+			"contents": "This is the content of the second post..."
+
 		}
 	]
 }
