@@ -1,5 +1,6 @@
-class NoticeFrontService extends BaseNoticeService {
+// import BaseNoticeService from './base-notice-svc'
 
+class NoticeFrontService extends BaseNoticeService {
     constructor() {
         super();
 
@@ -10,8 +11,9 @@ class NoticeFrontService extends BaseNoticeService {
             read:       {
                 outputOption: 3,
                 cbBegin(cmd) { 
-                    var ntc_idx= cmd._model.columns['ntc_idx'].value;
-                    cmd.url = `data/read${ntc_idx}.json`;
+                    // var ntc_idx= cmd._model.columns['ntc_idx'].value;
+                    // cmd.url = `/notice/data/read${ntc_idx}.json`;
+                    cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
             },  
@@ -40,3 +42,5 @@ class NoticeFrontService extends BaseNoticeService {
         };
     }
 }
+
+// export default NoticeFrontService;

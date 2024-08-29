@@ -29,7 +29,7 @@
     <script id="area-temp" type="text/x-handlebars-template">
       {{#rows}}
       <tr>
-        <td><a href="javascript:bm.fn.procRead('{{ntc_idx}}');" class='btnNormal'>{{title}}</a></td>
+        <td><a href="javascript:bm.fn.procRead('{{@index}}');" class='btnNormal'>{{title}}</a></td>
         <td>{{create_dt}}</td>			            	
       </tr>
       {{/rows}} 
@@ -58,17 +58,18 @@
 <script src="service/base-notice-svc.js"></script>
 <script src="service/notice-front-svc.js"></script>
 <script>
-  // ##################################################
+
+    // ##################################################
 	var bm = new _L.BindModel(new NoticeFrontService());
 
-  bm.url = 'data/list.json';  // base url
+    bm.url = '/notice/data/list.json';  // base url
 
-	$('#btn_List').click(bm.fn.procList);
+	$('#btn_List').click(()=> bm.cmd['list'].execute());
 
 	$(document).ready(function () {
-    bm.init();
-    bm.fn.procList();
-  });
+        bm.init();
+        bm.cmd['list'].execute();
+    });
   // ##################################################
 </script>
 </body>

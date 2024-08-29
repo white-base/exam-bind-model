@@ -83,24 +83,25 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
-<script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.js"></script>
-<script src="service/base-svc.js"></script>
-<script src="service/base-notice-svc.js"></script>
-<script src="service/notice-admin-svc.js"></script>
+<script src="./App.js" type="module"></script>
+<!-- <script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.js"></script> -->
+<!-- <script src="service/base-svc.js"></script> -->
+<!-- <script src="service/base-notice-svc.js"></script> -->
+<!-- <script src="service/notice-admin-svc.js"></script> -->
 <script>
 	// ##################################################
-	var bm = new _L.BindModel(new NoticeAdminService());
+	// var bm = new _L.BindModel(new NoticeAdminService());
 
-  bm.url = 'data/list.json';  // base url
-	
-  $('#btn_Update').click(bm.fn.procUpdate);
-	$('#btn_Delete').click(bm.fn.procDelete);
-	$('#btn_List').click(bm.fn.procList);
+  //   bm.url = '/notice/data/list.json';  // base url
+	// // button event
+  //   $('#btn_Update').click(()=> bm.cmd['update'].execute());
+	// $('#btn_Delete').click(()=> bm.cmd['delete'].execute());
+	// $('#btn_List').click(()=> bm.cmd['list'].execute());
 
-	$(document).ready(function () {
-    bm.init();
-    bm.fn.procList();
-  });
+	// $(document).ready(function () {
+  //       bm.init();
+  //       bm.cmd['list'].execute();
+  // });
   // ##################################################
 </script>
 </body>

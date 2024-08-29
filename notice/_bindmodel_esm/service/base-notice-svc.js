@@ -1,5 +1,4 @@
 class BaseNoticeService extends BaseService {
-
     constructor(_SUFF = '') {
         super(_SUFF);
 
@@ -14,26 +13,26 @@ class BaseNoticeService extends BaseService {
             // valid, bind, output
             ntc_idx:        '',
             title:      { 
-                selector: { key: '#title'+ _SUFF,        type: 'value' },
+                selector: { key: `#title${_SUFF}`,        type: 'value' },
                 required: true,
             },
-            contents:   { selector: { key: '#contents'+ _SUFF,     type: 'value' } },
+            contents:   { selector: { key: `#contents${_SUFF}`,     type: 'value' } },
             top_yn:     { 
                 selector: { key: `input[name=top_yn${_SUFF}]`,      type: 'none' },
                 setFilter: function (val) { 
-                    $('input[name=top_yn'+_SUFF+']').prop('checked', val == 'Y' ? true : false);
+                    $(`input[name=top_yn${_SUFF}]`).prop('checked', val == 'Y' ? true : false);
                 },
                 getFilter: function (val) {
-                    return $('input[name=top_yn'+_SUFF+']:checked').val();
+                    return $(`input[name=top_yn${_SUFF}]:checked`).val();
                 },
             },
             active_cd:  { 
-                selector: { key: 'input[name=active_cd'+_SUFF+'][type=radio]',  type: 'none' },
+                selector: { key: `input[name=active_cd${_SUFF}][type=radio]`,  type: 'none' },
                 setFilter(val) { 
-                    $('input[name=active_cd'+_SUFF+'][value='+ val + ']').prop('checked', true);
+                    $(`input[name=active_cd${_SUFF}][value=${val}]`).prop('checked', true);
                 },
                 getFilter(val) {
-                    return $('input[name=active_cd'+_SUFF+']:checked').val();
+                    return $(`input[name=active_cd${_SUFF}]:checked`).val();
                 },
             },
             create_dt:  {
@@ -43,18 +42,8 @@ class BaseNoticeService extends BaseService {
         
         this.fn = {
             procRead(index) { 
-                // _this.bindModel.columns['ntc_idx'].value = ntc_idx;
                 _this.bindModel.items._index = index;
                 _this.bindModel.command['read'].execute();
-            },
-            procDelete() {
-                _this.bindModel.command['delete'].execute();
-            },
-            procUpdate() { 
-                _this.bindModel.command['update'].execute();
-            },
-            procList() { 
-                _this.bindModel.command['list'].execute();
             }
         };
     }

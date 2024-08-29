@@ -1,5 +1,4 @@
 class NoticeAdminService extends BaseNoticeService {
-
     constructor() {
         super();
 
@@ -12,8 +11,6 @@ class NoticeAdminService extends BaseNoticeService {
             read:       {
                 outputOption: 3,
                 cbBegin(cmd) { 
-                    // var ntc_idx= cmd._model.columns['ntc_idx'].value;
-                    // cmd.url = `data/read${ntc_idx}.json`;  restful q방식
                     cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
@@ -36,7 +33,7 @@ class NoticeAdminService extends BaseNoticeService {
                 cbEnd(status, cmd, res) {
                     if (res) {
                         alert('The post has been deleted.');
-                        _this.bindModel.fn.procList();
+                        _this.bindModel.cmd['list'].execute();
                     }
                 }
             },
@@ -53,16 +50,16 @@ class NoticeAdminService extends BaseNoticeService {
                 },
             }
         };
-        
+
         this.mapping = {
             _area_temp:     { list:     'misc' },
             _area_tbody:    { list:     'misc' },
             _area_form:     { list:     'misc' },
-            ntc_idx:        { read:     'bind',     delete:     'bind',            update:  'bind' },
-            title:          { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
-            contents:       { read:     'output',   create:     'bind',            update:  'bind' },
-            top_yn:         { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
-            active_cd:      { read:     'output',   create:     ['valid', 'bind'], update:  ['valid', 'bind'], },
+            ntc_idx:        { read:     'bind',     update:  'bind',               delete:     'bind' },
+            title:          { read:     'output',   update:  ['valid', 'bind'], },
+            contents:       { read:     'output',   update:  'bind' },
+            top_yn:         { read:     'output',   update:  ['valid', 'bind'], },
+            active_cd:      { read:     'output',   update:  ['valid', 'bind'], },
             create_dt:      { read:     'output' },
         };
 
