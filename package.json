@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "logic-bind-model": "file:../bind-model"
+  },
+  "devDependencies": {
+    "chai": "^5.1.1"
   }
 }

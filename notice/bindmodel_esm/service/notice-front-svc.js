@@ -1,4 +1,4 @@
-// import BaseNoticeService from './base-notice-svc'
+import BaseNoticeService from './base-notice-svc.js';
 
 class NoticeFrontService extends BaseNoticeService {
     constructor() {
@@ -43,4 +43,7 @@ class NoticeFrontService extends BaseNoticeService {
     }
 }
 
-// export default NoticeFrontService;
+export {
+    NoticeFrontService as default,
+    NoticeFrontService
+}

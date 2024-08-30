@@ -1,3 +1,5 @@
+import BaseNoticeService from './base-notice-svc.js';
+
 class NoticeAdminService extends BaseNoticeService {
     constructor() {
         super();
@@ -64,4 +66,9 @@ class NoticeAdminService extends BaseNoticeService {
         };
 
     }    
+}
+
+export {
+    NoticeAdminService as default,
+    NoticeAdminService
 }

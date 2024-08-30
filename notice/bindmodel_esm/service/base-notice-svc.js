@@ -1,3 +1,5 @@
+import BaseService from './base-svc.js';
+
 class BaseNoticeService extends BaseService {
     constructor(_SUFF = '') {
         super(_SUFF);
@@ -47,4 +49,9 @@ class BaseNoticeService extends BaseService {
             }
         };
     }
+}
+
+export {
+    BaseNoticeService as default,
+    BaseNoticeService
 }

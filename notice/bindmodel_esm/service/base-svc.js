@@ -13,3 +13,8 @@ class BaseService {
         };
     }
 }
+
+export {
+    BaseService as default,
+    BaseService
+}
