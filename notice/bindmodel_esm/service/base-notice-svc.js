@@ -21,25 +21,23 @@ class BaseNoticeService extends BaseService {
             contents:   { selector: { key: `#contents${_SUFF}`,     type: 'value' } },
             top_yn:     { 
                 selector: { key: `input[name=top_yn${_SUFF}]`,      type: 'none' },
-                setFilter: function (val) { 
+                setFilter(val) { 
                     $(`input[name=top_yn${_SUFF}]`).prop('checked', val == 'Y' ? true : false);
                 },
-                getFilter: function (val) {
+                getFilter(val) {
                     return $(`input[name=top_yn${_SUFF}]:checked`).val();
-                },
+                }
             },
-            active_cd:  { 
+            active_cd:  {
                 selector: { key: `input[name=active_cd${_SUFF}][type=radio]`,  type: 'none' },
                 setFilter(val) { 
                     $(`input[name=active_cd${_SUFF}][value=${val}]`).prop('checked', true);
                 },
                 getFilter(val) {
                     return $(`input[name=active_cd${_SUFF}]:checked`).val();
-                },
+                }
             },
-            create_dt:  {
-                selector: { key: `#create_dt${_SUFF}`,  type: 'text' }
-            }
+            create_dt:  { selector: { key: `#create_dt${_SUFF}`,  type: 'text' } }
         };
         
         this.fn = {
