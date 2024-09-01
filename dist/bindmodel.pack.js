@@ -5417,6 +5417,59 @@
             return this.$elements.indexOf(p_elem);
         };
 
+        /**
+         * 모든 요소 각각에 대하여 주어진 함수를 호출한 결과를 모아 새로운 배열을 반환합니다.
+         * @param {Function} callback.currValue 처리할 현재 객체
+         * @param {Function} callback.index 요소의 인덱스
+         * @param {Function} callback.thisArg 호출한 컬렉션
+         * @returns  {Array}
+         */
+        BaseCollection.prototype.forEach  = function(callback) {
+            var arr = [];
+            
+            for(var i = 0; i < this.count; i++) {
+                arr.push(callback(this[i], i, this));
+            }
+            return arr;
+        };
+        // Array.prototype.forEach = function forEach (callback, thisArg) {
+        //     if (typeof callback !== 'function') {
+        //       throw new TypeError(callback + ' is not a function');
+        //     }
+        //     var array = this;
+        //     thisArg = thisArg || this;
+        //     for (var i = 0, l = array.length; i !== l; ++i) {
+        //       callback.call(thisArg, array[i], i, array);
+        //     }
+        //   };
+
+
+        /**
+         * 모든 요소 각각에 대하여 주어진 함수를 호출한 결과를 모아 새로운 배열을 반환합니다.
+         * @param {Function} callback 콜백함수 (currentValue, index, array) => {}
+         * @param {any} thisArg 호출한 컬렉션
+         * 
+         * @returns  {Array}
+         */
+        BaseCollection.prototype.map  = function(callback, thisArg) {
+            var newArr = [];
+
+            if (typeof this.count != 'number') return;
+            if (typeof callback != 'function') return;
+     
+            if (typeof this == 'object') {
+    
+                for (var i = 0; i < this.count; i++) {
+                    if (i in this) {
+                        newArr[i] = callback.call(thisArg || this, this[i], i, this);
+                    } else {
+                        return;
+                    }
+                }
+            }
+            return newArr;
+        };
+
         /** 
          * 컬렉션에 요소를 추가합니다.
          * @abstract 
@@ -5428,7 +5481,6 @@
         /**
          * 컬렉션을 초기화 합니다.
          * @abstract 
-         * @fires _L.Collection.BaseCollection#onClear 
          */
         BaseCollection.prototype.clear  = function() {
             throw new ExtendError(/EL04115/, null, []);

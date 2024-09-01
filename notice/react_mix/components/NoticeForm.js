@@ -15,7 +15,7 @@ export default function NoticeForm({ selectedNotice, formData, handleChange, han
             className: 'form-control',
             id: 'title',
             name: 'title',
-            value: formData.title,
+            value: /* formData.title */bm.cols.title.value,
             onChange: handleChange
           })
         ),
@@ -26,7 +26,7 @@ export default function NoticeForm({ selectedNotice, formData, handleChange, han
             id: 'contents',
             name: 'contents',
             rows: '3',
-            value: formData.contents,
+            value: /* formData.contents */bm.cols.contents.value,
             onChange: handleChange
           })
         ),
@@ -38,7 +38,7 @@ export default function NoticeForm({ selectedNotice, formData, handleChange, han
                 className: 'form-check-input',
                 id: 'check1',
                 name: 'top_yn',
-                checked: formData.top_yn,
+                checked: /* formData.top_yn */bm.cols.top_yn.value,
                 onChange: handleChange
               }),
               React.createElement('label', { className: 'form-check-label', htmlFor: 'check1' }, 'top notice')
@@ -53,7 +53,7 @@ export default function NoticeForm({ selectedNotice, formData, handleChange, han
                   id: `radio${value}`,
                   name: 'active_cd',
                   value: value,
-                  checked: formData.active_cd === value,
+                  checked: /* formData.active_cd */bm.cols.active_cd.value === value,
                   onChange: handleChange
                 }),
                 React.createElement('label', { className: 'form-check-label', htmlFor: `radio${value}` },

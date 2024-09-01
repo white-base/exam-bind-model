@@ -12,7 +12,7 @@ const { useState, useEffect } = React;
 
 export default function NoticeAdminPage() {
   
-
+  // POINT: 축소 가능
   const [notices, setNotices] = useState([]);
   const [selectedNotice, setSelectedNotice] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,23 +28,36 @@ export default function NoticeAdminPage() {
 
   const fetchNotices = async () => {
     await bm.cmd['list'].execute();
-    try {
-      const response = await axios.get('/notice/data/list.json');
-      setNotices(response.data.rows);
-    } catch (error) {
-      console.error('Failed to fetch notices:', error);
-    }
+    setNotices(bm.cmd.list.output.rows);
 
+    // try {
+    //   const response = await axios.get('/notice/data/list.json');
+    //   setNotices(response.data.rows);
+    // } catch (error) {
+    //   console.error('Failed to fetch notices:', error);
+    // }
   };
 
-  const handleRead = (notice) => {
+  const handleRead = async (notice, idx) => {
     setSelectedNotice(notice);
-    setFormData({
-      title: notice.title,
-      contents: notice.contents || '',
-      active_cd: notice.active_cd || 'D',
-      top_yn: notice.top_yn === 'Y',
-    });
+    
+    bm.items._index = idx;
+    await bm.command['read'].execute();
+    
+    // REVIEW: 요약 대상
+    // setFormData({ 
+    //   title: bm.cols.title.value,
+    //   contents: bm.cols.contents.value || '',
+    //   active_cd: bm.cols.active_cd.value || 'D',
+    //   top_yn: bm.cols.top_yn.value === 'Y',
+    // });
+
+    // setFormData({
+    //   title: notice.title,
+    //   contents: notice.contents || '',
+    //   active_cd: notice.active_cd || 'D',
+    //   top_yn: notice.top_yn === 'Y',
+    // });
   };
 
   const handleList = () => {
@@ -53,20 +66,22 @@ export default function NoticeAdminPage() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    bm.cols[name].value = value;
+    // setFormData((prevFormData) => ({
+    //   ...prevFormData,
+    //   [name]: type === 'checkbox' ? checked : value,
+    // }));
+    
   };
 
   const handleUpdate = async () => {
     
     // POINT: 축소 가능
     // bm.cols.ntc_idx.value = formData.ntc_idx;
-    bm.cols.title.value = formData.title;
-    bm.cols.contents.value = formData.contents;
-    bm.cols.active_cd.value = formData.active_cd;
-    bm.cols.top_yn.value = formData.top_yn;
+    // bm.cols.title.value = formData.title;
+    // bm.cols.contents.value = formData.contents;
+    // bm.cols.active_cd.value = formData.active_cd;
+    // bm.cols.top_yn.value = formData.top_yn;
     // POINT:
     await bm.cmd['update'].execute();
 
@@ -114,8 +129,9 @@ export default function NoticeAdminPage() {
           handleChange,
           handleUpdate,
           handleDelete,
-          handleList
-        }, bm)
+          handleList,
+          bm
+        })
       )
     )
   );
