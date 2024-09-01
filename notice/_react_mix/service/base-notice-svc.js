@@ -5,7 +5,7 @@ class BaseNoticeService {
         this.items = {
             // valid, bind, output
             ntc_idx:    '',
-            title:      { required: true },
+            title:      '',
             contents:   '',
             top_yn:     '',
             active_cd:  '',

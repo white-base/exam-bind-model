@@ -1,89 +1,100 @@
-import React from 'https://esm.sh/react';
-
+import React, { Component } from 'https://esm.sh/react';
 import NoticeList from './NoticeList.js';
 import NoticeForm from './NoticeForm.js';
-
+// import axios from 'axios'; // Assuming axios is used based on your fetch logic
 // POINT:
 import NoticeAdminService from '../service/notice-admin-svc.js'
 const bm = new _L.BindModel(new NoticeAdminService());  
-bm.url = '/notice/data/list.json';
 
-const { useState, useEffect } = React;
+export default class NoticeAdminPage extends Component {
+  constructor(props) {
+    super(props);
+    // POINT:
+    this.state = {
+      selectedNotice: null,
+    };
 
-export default function NoticeAdminPage() {
-  
-  // POINT: 축소 가능
-  const [notices, setNotices] = useState([]);
-  const [selectedNotice, setSelectedNotice] = useState(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    contents: '',
-    active_cd: 'D',
-    top_yn: false,
-  });
+    // this.state = {
+    //   notices: [],
+    //   selectedNotice: null,
+    //   formData: {
+    //     title: '',
+    //     contents: '',
+    //     active_cd: 'D',
+    //     top_yn: false,
+    //   },
+    // };
 
-  useEffect(() => {
-    fetchNotices();
-  }, []);
+    
+    bm.url = '/notice/data/list.json';
+  }
 
-  const fetchNotices = async () => {
+  componentDidMount() {
+    this.fetchNotices();
+  }
+
+  fetchNotices = async () => {
+    // POINT:
     await bm.cmd['list'].execute();
-    setNotices(bm.cmd.list.output.rows);
-
+    this.forceUpdateComponent();
+    
     // try {
     //   const response = await axios.get('/notice/data/list.json');
-    //   setNotices(response.data.rows);
+    //   this.setState({ notices: response.data.rows });
     // } catch (error) {
     //   console.error('Failed to fetch notices:', error);
     // }
   };
 
-  const handleRead = async (notice, idx) => {
-    setSelectedNotice(notice);
-    
+  handleRead = async (notice, idx) => {
+    // POINT:
     bm.items._index = idx;
     await bm.command['read'].execute();
-    
-    // REVIEW: 요약 대상
-    // setFormData({ 
-    //   title: bm.cols.title.value,
-    //   contents: bm.cols.contents.value || '',
-    //   active_cd: bm.cols.active_cd.value || 'D',
-    //   top_yn: bm.cols.top_yn.value === 'Y',
-    // });
-
-    // setFormData({
-    //   title: notice.title,
-    //   contents: notice.contents || '',
-    //   active_cd: notice.active_cd || 'D',
-    //   top_yn: notice.top_yn === 'Y',
+    this.setState({
+      selectedNotice: notice,
+    });
+    // this.forceUpdateComponent();
+    // this.setState({
+    //   selectedNotice: notice,
+    //   formData: {
+    //     title: notice.title,
+    //     contents: notice.contents || '',
+    //     active_cd: notice.active_cd || 'D',
+    //     top_yn: notice.top_yn === 'Y',
+    //   },
     // });
   };
 
-  const handleList = () => {
-    setSelectedNotice(null);
+  handleList = () => {
+    this.setState({ selectedNotice: null });
   };
 
-  const handleChange = (e) => {
+  handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     bm.cols[name].value = value;
-    // setFormData((prevFormData) => ({
-    //   ...prevFormData,
-    //   [name]: type === 'checkbox' ? checked : value,
+    this.forceUpdateComponent();
+
+    // this.setState((prevState) => ({
+    //   formData: {
+    //     ...prevState.formData,
+    //     [name]: type === 'checkbox' ? checked : value,
+    //   },
     // }));
-    
   };
 
-  const handleUpdate = async () => {
-    
-    // POINT: 축소 가능
-    // bm.cols.ntc_idx.value = formData.ntc_idx;
-    // bm.cols.title.value = formData.title;
-    // bm.cols.contents.value = formData.contents;
-    // bm.cols.active_cd.value = formData.active_cd;
-    // bm.cols.top_yn.value = formData.top_yn;
+  handleUpdate = async () => {
     // POINT:
+    var _this = this;
     await bm.cmd['update'].execute();
+    bm.cmd['update'].cbEnd = function(status, cmd, res) {
+      if (res) {
+        alert('The post has been modified.');
+        _this.handleList(); // 이동
+      }
+    }
+    // this.handleList();
+
+    // const { selectedNotice, formData } = this.state;
 
     // if (!formData.title.trim()) {
     //   alert('Title is required.');
@@ -93,46 +104,63 @@ export default function NoticeAdminPage() {
     // try {
     //   const response = await axios.put(`data/list/${selectedNotice.ntc_idx}`, formData);
     //   console.log('Notice updated successfully:', response.data);
-    //   fetchNotices();
-    //   setSelectedNotice(null);
+    //   this.fetchNotices();
+    //   this.setState({ selectedNotice: null });
     // } catch (error) {
     //   console.error('Failed to update notice:', error);
     // }
   };
 
-  const handleDelete = async () => {
+  handleDelete = async () => {
     // POINT:
+    var _this = this;
     await bm.cmd['delete'].execute();
+    bm.cmd['delete'].cbEnd = function(status, cmd, res) {
+      if (res) {
+        alert('The post has been deleted.');
+        _this.handleList(); // 이동
+      }
+    }
+
+    // const { selectedNotice } = this.state;
 
     // try {
     //   const response = await axios.delete(`data/list/${selectedNotice.ntc_idx}`);
     //   console.log('Notice deleted successfully:', response.data);
-    //   fetchNotices();
-    //   setSelectedNotice(null);
+    //   this.fetchNotices();
+    //   this.setState({ selectedNotice: null });
     // } catch (error) {
     //   console.error('Failed to delete notice:', error);
     // }
   };
 
-  return (
-    React.createElement('div', { className: 'container mt-3' },
-      React.createElement('h2', null, 'Notice Admin Page'),
-      React.createElement('h5', null, 'Key Features: List inquiry/modification/deletion'),
-      React.createElement('p', null, 'Data is transmitted when modified or deleted from the test page, but it is not actually processed.'),
-      
-      !selectedNotice ? (
-        React.createElement(NoticeList, { notices, handleRead, bm })
-      ) : (
-        React.createElement(NoticeForm, {
-          selectedNotice,
-          formData,
-          handleChange,
-          handleUpdate,
-          handleDelete,
-          handleList,
-          bm
-        })
+  forceUpdateComponent = () => {
+    this.forceUpdate(); // This will force a re-render of the component
+  };
+
+  render() {
+    const { notices, selectedNotice, formData } = this.state;
+
+    return (
+      React.createElement('div', { className: 'container mt-3' },
+        React.createElement('h2', null, 'Notice Admin Page'),
+        React.createElement('h5', null, 'Key Features: List inquiry/modification/deletion'),
+        React.createElement('p', null, 'Data is transmitted when modified or deleted from the test page, but it is not actually processed.'),
+        
+        !selectedNotice ? (
+          React.createElement(NoticeList, { notices, handleRead: this.handleRead, bm })
+        ) : (
+          React.createElement(NoticeForm, {
+            selectedNotice,
+            formData,
+            handleChange: this.handleChange,
+            handleUpdate: this.handleUpdate,
+            handleDelete: this.handleDelete,
+            handleList: this.handleList,
+            bm
+          })
+        )
       )
-    )
-  );
+    );
+  }
 }
