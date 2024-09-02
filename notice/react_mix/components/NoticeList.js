@@ -2,8 +2,8 @@ import React, { Component } from 'https://esm.sh/react';
 
 export default class NoticeList extends Component {
   render() {
-    const { notices, handleRead, bm } = this.props;
-    const rows = bm.cmd.list.output.rows;
+    const { handleRead, bindModel } = this.props;
+    const rows = bindModel.cmd.list.output.rows;
 
     return (
       React.createElement('table', { className: 'table' },
@@ -19,7 +19,7 @@ export default class NoticeList extends Component {
             rows.map((notice, i) => (
               React.createElement('tr', { key: notice.ntc_idx },
                 React.createElement('td', null,
-                  React.createElement('a', { href: '#!', onClick: () => handleRead(notice, i), className: 'btnNormal' },
+                  React.createElement('a', { href: '#', onClick: () => handleRead(i), className: 'btnNormal' },
                     notice.title
                   )
                 ),

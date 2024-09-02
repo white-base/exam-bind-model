@@ -5,19 +5,20 @@ class BaseNoticeService {
         this.items = {
             // valid, bind, output
             ntc_idx:    '',
-            title:      { required: true },
+            // title:      { required: true },
+            title:   '',
             contents:   '',
             top_yn:     '',
             active_cd:  '',
             create_dt:  ''
         };
         
-        this.fn = {
-            procRead(index) { 
-                _this.bindModel.items._index = index;
-                _this.bindModel.command['read'].execute();
-            }
-        };
+        // this.fn = {
+        //     procRead(index) { 
+        //         _this.bindModel.items._index = index;
+        //         _this.bindModel.command['read'].execute();
+        //     }
+        // };
     }
 }
 

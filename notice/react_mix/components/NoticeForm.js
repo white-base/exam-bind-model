@@ -2,14 +2,14 @@ import React, { Component } from 'https://esm.sh/react';
 
 export default class NoticeForm extends Component {
   render() {
-    const { selectedNotice, formData, handleChange, handleUpdate, handleDelete, handleList, bm } = this.props;
+    const { selectedNotice, handleChange, handleUpdate, handleDelete, handleList, bindModel } = this.props;
 
     return (
       React.createElement('div', { id: 'class-form' },
         React.createElement('form', null,
           React.createElement('div', { className: 'form-group' },
-            React.createElement('label', { htmlFor: 'create_dt' }, '날짜'),
-            React.createElement('p', { id: 'create_dt' }, selectedNotice.create_dt)
+            React.createElement('label', {}, '날짜'),
+            React.createElement('p', { id: 'create_dt' }, bindModel.cols.create_dt.value)
           ),
           React.createElement('div', { className: 'form-group' },
             React.createElement('label', { htmlFor: 'title' }, 'Title'),
@@ -18,7 +18,7 @@ export default class NoticeForm extends Component {
               className: 'form-control',
               id: 'title',
               name: 'title',
-              value: /* formData.title, */ bm.cols.title.value,
+              value: bindModel.cols.title.value,
               onChange: handleChange
             })
           ),
@@ -29,7 +29,7 @@ export default class NoticeForm extends Component {
               id: 'contents',
               name: 'contents',
               rows: '3',
-              value: /* formData.contents, */ bm.cols.contents.value,
+              value: bindModel.cols.contents.value,
               onChange: handleChange
             })
           ),
@@ -41,7 +41,7 @@ export default class NoticeForm extends Component {
                   className: 'form-check-input',
                   id: 'check1',
                   name: 'top_yn',
-                  checked: /* formData.top_yn, */ bm.cols.top_yn.value,
+                  checked: bindModel.cols.top_yn.value === 'Y',
                   onChange: handleChange
                 }),
                 React.createElement('label', { className: 'form-check-label', htmlFor: 'check1' }, 'top notice')
@@ -56,7 +56,7 @@ export default class NoticeForm extends Component {
                     id: `radio${value}`,
                     name: 'active_cd',
                     value: value,
-                    checked: /* formData.active_cd === value, */ bm.cols.active_cd.value === value,
+                    checked: bindModel.cols.active_cd.value === value,
                     onChange: handleChange
                   }),
                   React.createElement('label', { className: 'form-check-label', htmlFor: `radio${value}` },

@@ -40,10 +40,10 @@ class NoticeAdminService extends BaseNoticeService {
             },
             list:       {
                 outputOption: 1,
-                cbBegin(cmd) {
-                },
-                cbOutput(outs, cmd, res) {
-                },
+                // cbBegin(cmd) {
+                // },
+                // cbOutput(outs, cmd, res) {
+                // },
             }
         };
 
@@ -55,7 +55,6 @@ class NoticeAdminService extends BaseNoticeService {
             active_cd:  { read:     'output',               update:  ['valid', 'bind'], },
             create_dt:  { read:     'output' },
         };
-
     }    
 }
 
