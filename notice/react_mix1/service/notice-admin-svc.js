@@ -1,12 +1,11 @@
-import BaseNoticeService from './base-notice-svc.js';
-
-class NoticeAdminService extends BaseNoticeService {
+class NoticeAdminService {
     constructor() {
-        super();
-
         var _this       = this;
         var _template   = null;     // Handlebars template
 
+        this.items = {
+            title: { required: true }
+        },
         this.command = {
             create:     {
             },
@@ -20,9 +19,6 @@ class NoticeAdminService extends BaseNoticeService {
                 cbBind(bind, cmd, setup) {
                     console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
-                // cbEnd(status, cmd, res) {
-                //     if (res) alert('It has been modified.');
-                // }
             },
             delete:     {
                 cbValid(valid, cmd) { 
@@ -31,19 +27,9 @@ class NoticeAdminService extends BaseNoticeService {
                 cbBind(bind, cmd, setup) {
                     console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
-                // cbEnd(status, cmd, res) {
-                //     if (res) {
-                //         alert('The post has been deleted.');
-                //         _this.bindModel.cmd['list'].execute();
-                //     }
-                // }
             },
             list:       {
                 outputOption: 1,
-                // cbBegin(cmd) {
-                // },
-                // cbOutput(outs, cmd, res) {
-                // },
             }
         };
 
