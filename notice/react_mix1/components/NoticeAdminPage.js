@@ -9,7 +9,6 @@ export default class NoticeAdminPage extends Component {
   constructor(props) {
     super(props);
 
-    // bm.cols.title.required = true;
     bm.url = '/notice/data/list.json';
 
     this.state = { selectedNotice: null };

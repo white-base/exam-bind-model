@@ -98,11 +98,10 @@ export default class NoticeAdminPage extends Component {
         React.createElement('h5', null, 'Key Features: List inquiry/modification/deletion'),
         React.createElement('p', null, 'Data is transmitted when modified or deleted from the test page, but it is not actually processed.'),
         
-        React.createElement(NoticeList, { handleRead: this.handleRead, bindModel: bm }),
+        React.createElement(NoticeList, { bindModel: bm }),
         !selectedNotice || (
           React.createElement(NoticeForm, {
             handleChange: this.handleChange,
-            handleList: this.handleList,
             bindModel: bm
           })
         )

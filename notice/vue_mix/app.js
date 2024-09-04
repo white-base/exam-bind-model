@@ -1,7 +1,12 @@
 import NoticeList from './components/NoticeList.js';
 import NoticeForm from './components/NoticeForm.js';
+import NoticeAdminService from './service/notice-admin-svc.js'
 
 const { createApp, ref } = Vue
+
+// Vue.devtools = true; // e
+
+const bm = new _L.BindModel(new NoticeAdminService());  
 
 const app = createApp({
   data() {
@@ -12,7 +17,8 @@ const app = createApp({
         'D': 'Standby',
         'A': 'Activation',
         'H': 'Hidden'
-      }
+      },
+      bindModel: bm,
     };
   },
   methods: {
@@ -30,6 +36,8 @@ const app = createApp({
       this.selectedNotice = null;
     },
     updateNotice(notice) {
+      // POINT: 여기서 처리하면 됨
+      // bm.
       alert('Notice updated successfully');
       this.deselectNotice();
     },

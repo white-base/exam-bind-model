@@ -1,7 +1,6 @@
 import React, { Component } from 'https://esm.sh/react';
 import NoticeList from './NoticeList.js';
 import NoticeForm from './NoticeForm.js';
-// import NoticeAdminService from '../service/notice-admin-svc.js'
 
 const bm = new _L.BindModel({
   mapping: {
