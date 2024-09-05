@@ -9,7 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "logic-bind-model": "file:../bind-model"
+    "logic-bind-model": "file:../bind-model",
+    "vite": "^5.4.3"
   },
   "devDependencies": {
     "chai": "^5.1.1"

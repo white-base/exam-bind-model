@@ -11,9 +11,6 @@ class NoticeAdminService {
             },
             read:       {
                 outputOption: 3,
-                cbBegin(cmd) { 
-                    cmd.outputOption.index = Number(cmd._model.items._index);
-                },
             },
             update:     {
                 cbBind(bind, cmd, setup) {

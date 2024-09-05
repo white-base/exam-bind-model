@@ -4,6 +4,7 @@ class NoticeAdminService {
         var _template   = null;     // Handlebars template
 
         this.items = {
+            ntc_idx: { required: true },
             title: { required: true }
         },
         this.command = {
@@ -11,9 +12,6 @@ class NoticeAdminService {
             },
             read:       {
                 outputOption: 3,
-                cbBegin(cmd) { 
-                    cmd.outputOption.index = Number(cmd._model.items._index);
-                },
             },
             update:     {
                 cbBind(bind, cmd, setup) {
@@ -34,13 +32,28 @@ class NoticeAdminService {
         };
 
         this.mapping = {
-            ntc_idx:    { read:     ['bind', 'output'],     update:  'bind',               delete:     'bind' },
+            ntc_idx:    { read:     ['bind', 'output'],     update:  'bind',               delete:     ['valid', 'bind'] },
             title:      { read:     'output',               update:  ['valid', 'bind'], },
             contents:   { read:     'output',               update:  'bind' },
             top_yn:     { read:     'output',               update:  ['valid', 'bind'], },
             active_cd:  { read:     'output',               update:  ['valid', 'bind'], },
             create_dt:  { read:     'output' },
         };
+
+        // this.fn = {
+            // execUpdate(formData) {
+            //     for (var prop in formData) {
+            //         _this.bindModel.columns[prop].value = formData[prop];
+            //     }
+            //     _this.bindModel.cmd.update.execute();
+            // },
+            // execRead(formData) {
+            //     for (var prop in formData) {
+            //         _this.bindModel.columns[prop].value = formData[prop];
+            //     }
+            //     _this.bindModel.cmd.update.execute();
+            // }
+        // }
     }    
 }
 

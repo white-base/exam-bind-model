@@ -24,9 +24,6 @@ export default class NoticeAdminPage extends Component {
     bm.cols.title.required = true;
     bm.cmd['list'].outputOption = 1;
     bm.cmd['read'].outputOption = 3;
-    bm.cmd['read'].cbBegin = function(cmd) {
-      cmd.outputOption.index = Number(cmd._model.items._index);
-    };
     bm.cmd['update'].cbBind = function(bind, cmd, setup) {
       console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
     };
@@ -47,7 +44,7 @@ export default class NoticeAdminPage extends Component {
         alert('The post has been deleted.');
         _this.handleList();
       }
-    }
+    };
 
     this.state = { selectedNotice: null };
   }
@@ -62,7 +59,7 @@ export default class NoticeAdminPage extends Component {
   };
 
   handleRead = async (idx) => {
-    bm.items._index = idx;
+    bm.cmd['read'].outputOption.index = Number(idx);
     await bm.command['read'].execute();
     this.setState({ selectedNotice: true });
   };

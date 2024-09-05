@@ -1,5 +1,5 @@
 export default {
-    props: ['notices'],
+    props: ['notices', 'bindModel'],
     emits: ['select-notice'],
     template: `
       <table class="table">
@@ -11,15 +11,18 @@ export default {
           </tr>
         </thead>
         <tbody>
-          <tr v-if="notices.length === 0">
+          <tr v-if="bindModel.cmd.list.output.rows.length === 0">
             <td colspan="3">There is no content.</td>
           </tr>
-          <tr v-for="notice in notices" :key="notice.ntc_idx">
-            <td><a href="#" @click.prevent="$emit('select-notice', notice)">{{ notice.title }}</a></td>
+          <tr v-for="(notice, index) in bindModel.cmd.list.output.rows" :key="notice.ntc_idx">
+            <td><a href="#" @click.prevent="$emit('select-notice', index)">{{ notice.title }}</a></td>
             <td>{{ notice.active_cd }}</td>
             <td>{{ notice.create_dt }}</td>
           </tr>
         </tbody>
       </table>
-    `
+    `,
+    async created() {     
+      await this.bindModel.cmd['list'].execute();
+    },
   };

@@ -18,9 +18,6 @@ export default class NoticeAdminPage extends Component {
       command: {
         read: {
             outputOption: 3,
-            cbBegin(cmd) { 
-                cmd.outputOption.index = Number(cmd._model.items._index);
-            },
         },
         update: {
             cbBind(bind, cmd, setup) {
@@ -64,7 +61,7 @@ export default class NoticeAdminPage extends Component {
       },
       fn: {
         handleRead: async (idx) => {
-          bm.items._index = idx;
+          bm.cmd['read'].outputOption.index = Number(idx);
           await bm.command['read'].execute();
           reactThis.setState({ selectedNotice: true });
         },

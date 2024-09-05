@@ -7,6 +7,7 @@ const { createApp, ref } = Vue
 // Vue.devtools = true; // e
 
 const bm = new _L.BindModel(new NoticeAdminService());  
+bm.url =' /notice/data/list.json';
 
 const app = createApp({
   data() {
@@ -22,32 +23,35 @@ const app = createApp({
     };
   },
   methods: {
-    fetchNotices() {
-      fetch('/notice/data/list.json')
-        .then(response => response.json())
-        .then(data => {
-          this.notices = data.rows || [];
-        });
-    },
-    selectNotice(notice) {
-      this.selectedNotice = notice;
+    // fetchNotices() {
+    //   fetch('/notice/data/list.json')
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       this.notices = data.rows || [];
+    //     });
+    // },
+    async selectNotice(idx) {
+      bm.cmd['read'].outputOption.index = Number(idx);
+      await bm.command['read'].execute();
+      this.selectedNotice = idx;
     },
     deselectNotice() {
       this.selectedNotice = null;
     },
-    updateNotice(notice) {
-      // POINT: 여기서 처리하면 됨
-      // bm.
-      alert('Notice updated successfully');
-      this.deselectNotice();
-    },
-    deleteNotice() {
-      alert('Notice deleted successfully');
-      this.deselectNotice();
-    }
+    // updateNotice(notice) {
+    //   // POINT: 여기서 처리하면 됨
+    //   // bm.
+    //   alert('Notice updated successfully');
+    //   this.deselectNotice();
+    // },
+    // deleteNotice() {
+    //   alert('Notice deleted successfully');
+    //   this.deselectNotice();
+    // }
   },
-  mounted() {
-    this.fetchNotices();
+  async mounted() {
+    // await bm.cmd['list'].execute();
+    // this.fetchNotices();
   },
   components: {
     'notice-list': NoticeList,

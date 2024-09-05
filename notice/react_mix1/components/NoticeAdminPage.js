@@ -24,7 +24,7 @@ export default class NoticeAdminPage extends Component {
   };
 
   handleRead = async (idx) => {
-    bm.items._index = idx;
+    bm.cmd['read'].outputOption.index = Number(idx);
     await bm.command['read'].execute();
     this.setState({ selectedNotice: true });
   };

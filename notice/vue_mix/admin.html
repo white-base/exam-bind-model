@@ -13,16 +13,15 @@
   <p>Data is transmitted when modified or deleted from the test page, but it is not actually processed.</p>
 
   <!-- 공지사항 목록 컴포넌트 -->
-  <notice-list v-if="!selectedNotice" :notices="notices" @select-notice="selectNotice"></notice-list>
+  <notice-list :notices="notices" :bind-model="bindModel" @select-notice="selectNotice"></notice-list>
   
   <!-- 공지사항 수정 폼 컴포넌트 -->
   <notice-form v-if="selectedNotice" 
                :notice="selectedNotice" 
                :status-options="statusOptions" 
                :bind-model="bindModel" 
-               @update-notice="updateNotice" 
-               @delete-notice="deleteNotice" 
-               @deselect-notice="deselectNotice">
+               @deselect-notice="deselectNotice"
+               >
   </notice-form>
 </div>
 
