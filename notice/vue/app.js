@@ -19,14 +19,13 @@ const app = createApp({
     fetchNotices() {
       axios.get('/notice/data/list.json')
       .then(response => {
-        // 서버로부터 목록을 가져와서 필요한 필드만 매핑
         this.notices = response.data.rows.map(row => ({
-          ntc_idx: row.ntc_idx,  // 'read' 에 해당
-          title: row.title,      // 'read' 에 해당
-          contents: row.contents, // 'read' 에 해당
-          top_yn: row.top_yn,    // 'read' 에 해당
-          active_cd: row.active_cd,  // 'read' 에 해당
-          create_dt: row.create_dt   // 'read' 에 해당
+          ntc_idx: row.ntc_idx,
+          title: row.title,
+          contents: row.contents,
+          top_yn: row.top_yn,
+          active_cd: row.active_cd,
+          create_dt: row.create_dt
         })) || [];
       })
       .catch(error => {
