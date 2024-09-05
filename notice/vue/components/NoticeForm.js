@@ -9,6 +9,7 @@ export default {
     template: `
       <div id="class-form">
         <form @submit.prevent="update">
+        <input type="hidden" id="ntc_idx" value="{{ notice.ntc_idx }}">
           <div class="form-group">
             <label for="create_dt">날짜</label>
             <p id="create_dt">{{ notice.create_dt }}</p>
@@ -36,7 +37,7 @@ export default {
             </div>
           </div>
           <button type="submit" class="btn btn-primary mt-3">Update</button>
-          <button type="button" class="btn btn-danger mt-3" @click="$emit('delete-notice')">Delete</button>
+          <button type="button" class="btn btn-danger mt-3" @click="deleteClick">Delete</button>
           <button type="button" class="btn btn-secondary mt-3" @click="$emit('deselect-notice')">List</button>
         </form>
       </div>
@@ -48,6 +49,13 @@ export default {
           return;
         }
         this.$emit('update-notice', this.formData);
+      },
+      deleteClick() {
+        if (!this.formData.ntc_idx) {
+          alert('ntc_idx is required.');
+          return;
+        }
+        this.$emit('delete-notice', this.formData.ntc_idx);
       }
     }
   };
