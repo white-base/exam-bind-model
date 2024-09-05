@@ -32,12 +32,6 @@ const app = createApp({
       .catch(error => {
         console.error('Error fetching notices:', error);
       });
-
-      // fetch('/notice/data/list.json')
-      //   .then(response => response.json())
-      //   .then(data => {
-      //     this.notices = data.rows || [];
-      //   });
     },
     selectNotice(notice) {
       this.selectedNotice = notice;
