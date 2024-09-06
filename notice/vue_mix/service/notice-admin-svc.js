@@ -39,21 +39,6 @@ class NoticeAdminService {
             active_cd:  { read:     'output',               update:  ['valid', 'bind'], },
             create_dt:  { read:     'output' },
         };
-
-        // this.fn = {
-            // execUpdate(formData) {
-            //     for (var prop in formData) {
-            //         _this.bindModel.columns[prop].value = formData[prop];
-            //     }
-            //     _this.bindModel.cmd.update.execute();
-            // },
-            // execRead(formData) {
-            //     for (var prop in formData) {
-            //         _this.bindModel.columns[prop].value = formData[prop];
-            //     }
-            //     _this.bindModel.cmd.update.execute();
-            // }
-        // }
     }    
 }
 

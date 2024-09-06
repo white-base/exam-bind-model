@@ -12,12 +12,10 @@
   <h5>Key Features: List inquiry/modification/deletion</h5>
   <p>Data is transmitted when modified or deleted from the test page, but it is not actually processed.</p>
 
-  <!-- 공지사항 목록 컴포넌트 -->
-  <notice-list :notices="notices" :bind-model="bindModel" @select-notice="selectNotice"></notice-list>
-  
-  <!-- 공지사항 수정 폼 컴포넌트 -->
+  <notice-list :bind-model="bindModel" 
+               @select-notice="selectNotice">
+  </notice-list>
   <notice-form v-if="selectedNotice" 
-               :notice="selectedNotice" 
                :status-options="statusOptions" 
                :bind-model="bindModel" 
                @deselect-notice="deselectNotice"

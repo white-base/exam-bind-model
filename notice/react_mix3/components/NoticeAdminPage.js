@@ -82,8 +82,8 @@ export default class NoticeAdminPage extends Component {
   handleChange = (e) => {
     let { name, value, type, checked } = e.target;
     if (type === 'checkbox') value = checked ? 'Y' : 'N';
-    bm.cols[name].value = value;  //  column value 설정
-    this.forceUpdate();           //  강제 화면 렌더링
+    bm.cols[name].value = value;  //  column value setting
+    this.forceUpdate();           //  Forced screen rendering
   };
 
   render() {

@@ -1,11 +1,11 @@
 export default {
-    props: ['notice', 'statusOptions', 'bindModel'],
+    props: ['statusOptions', 'bindModel'],
     data() {
       return {
         formData: { ...this.notice }
       };
     },
-    emits: ['update-notice', 'delete-notice', 'deselect-notice'],
+    emits: ['deselect-notice'],
     template: `
       <div id="class-form">
         <form @submit.prevent="updateClick">
@@ -41,7 +41,7 @@ export default {
         </form>
       </div>
     `,
-    created() {
+    async created() {
       var _this = this;
 
       this.bindModel.cmd['update'].cbEnd = function(status, cmd, res) {
@@ -62,12 +62,10 @@ export default {
         for (var prop in this.formData) {
           this.bindModel.columns[prop].value = this.formData[prop];
         }
-        this.bindModel.cmd.update.execute();
+        this.bindModel.cmd['update'].execute();
       },
       deleteClick() {
-        this.bindModel.cmd.delete.execute();
-        
-
+        this.bindModel.cmd['delete'].execute();
       }
 
     }

@@ -21,9 +21,7 @@ const app = createApp({
     };
   },
   methods: {
-    async selectNotice(idx) {
-      bm.cmd['read'].outputOption.index = Number(idx);
-      await bm.command['read'].execute();
+    selectNotice(idx) {
       this.selectedNotice = idx;
     },
     deselectNotice() {
