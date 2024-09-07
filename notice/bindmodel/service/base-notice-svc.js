@@ -1,7 +1,5 @@
-class BaseNoticeService extends BaseService {
+class BaseNoticeService {
     constructor(_SUFF = '') {
-        super(_SUFF);
-
         var _this = this;    
 
         this.items = {

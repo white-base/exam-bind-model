@@ -1,78 +1,20 @@
 import React, { Component } from 'https://esm.sh/react';
 import NoticeList from './NoticeList.js';
 import NoticeForm from './NoticeForm.js';
-
-const bm = new _L.BindModel();  
+import NoticeAdminService from '../service/notice-admin-svc.js'
 
 export default class NoticeAdminPage extends Component {
   constructor(props) {
     super(props);
     
-    var reactThis = this;
-
-    bm.setService({
-      url: '/notice/data/list.json',
-      items: {
-        title: { required: true }
-      },
-      command: {
-        read: {
-            outputOption: 3,
-        },
-        update: {
-            cbBind(bind, cmd, setup) {
-                console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
-            },
-            cbEnd(status, cmd, res)  {
-              if (res) {
-                alert('The post has been modified.');
-                reactThis.handleList();
-              }
-            }
-        },
-        delete: {
-            cbValid(valid, cmd) { 
-                if (confirm('Are you sure you want to delete it?')) return true;
-            },
-            cbBind(bind, cmd, setup) {
-                console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
-            },
-            cbEnd(status, cmd, res) {
-              if (res) {
-                alert('The post has been deleted.');
-                reactThis.handleList();
-              }
-            }
-        },
-        list: {
-            outputOption: 1,
-            cbEnd(status, cmd, res) {
-              reactThis.setState({ selectedNotice: null });
-            }
-        }
-      },
-      mapping: {
-        ntc_idx:    { read:     ['bind', 'output'],     update:  'bind',               delete:     'bind' },
-        title:      { read:     'output',               update:  ['valid', 'bind'], },
-        contents:   { read:     'output',               update:  'bind' },
-        top_yn:     { read:     'output',               update:  ['valid', 'bind'], },
-        active_cd:  { read:     'output',               update:  ['valid', 'bind'], },
-        create_dt:  { read:     'output' },
-      },
-      fn: {
-        handleRead: async (idx) => {
-          bm.cmd['read'].outputOption.index = Number(idx);
-          await bm.command['read'].execute();
-          reactThis.setState({ selectedNotice: true });
-        },
-      }
-    });
-
+    this.bm = new _L.BindModel(new NoticeAdminService(this));  
+    this.bm.url = '/notice/data/list.json';
+      
     this.state = { selectedNotice: null };
   }
 
   componentDidMount() {
-    bm.cmd['list'].execute();
+    this.bm.cmd['list'].execute();
   }
 
   handleList = () => {
@@ -82,7 +24,7 @@ export default class NoticeAdminPage extends Component {
   handleChange = (e) => {
     let { name, value, type, checked } = e.target;
     if (type === 'checkbox') value = checked ? 'Y' : 'N';
-    bm.cols[name].value = value;  //  column value setting
+    this.bm.cols[name].value = value;  //  column value setting
     this.forceUpdate();           //  Forced screen rendering
   };
 
@@ -95,11 +37,11 @@ export default class NoticeAdminPage extends Component {
         React.createElement('h5', null, 'Key Features: List inquiry/modification/deletion'),
         React.createElement('p', null, 'Data is transmitted when modified or deleted from the test page, but it is not actually processed.'),
         
-        React.createElement(NoticeList, { bindModel: bm }),
+        React.createElement(NoticeList, { bindModel: this.bm }),
         !selectedNotice || (
           React.createElement(NoticeForm, {
             handleChange: this.handleChange,
-            bindModel: bm
+            bindModel: this.bm
           })
         )
       )
