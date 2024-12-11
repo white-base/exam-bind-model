@@ -1,6 +1,6 @@
 export default class NoticeAdminService {
     constructor() {
-        const _this       = this;
+        const _this = this;
 
         this.items = {
             ntc_idx: { required: true },
@@ -27,7 +27,7 @@ export default class NoticeAdminService {
                     console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
                 cbEnd(status, cmd, res) {
-                    if (res) alert('The post has been deleted..');
+                    if (res) alert('The post has been deleted.');
                 }
             },
             list:       {
@@ -43,5 +43,12 @@ export default class NoticeAdminService {
             active_cd:  { read:     'output',               update:  ['valid', 'bind'], },
             create_dt:  { read:     'output' },
         };
+
+        // this.fn = {
+        //     execRead: (idx) => {
+        //         _this.bindModel.cmd['read'].outputOption.index = Number(idx);
+        //         return _this.bindModel.cmd['read'].execute();
+        //     },
+        // };
     }    
 }

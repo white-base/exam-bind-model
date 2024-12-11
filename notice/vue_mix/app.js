@@ -2,9 +2,9 @@ import NoticeList from './components/NoticeList.js';
 import NoticeForm from './components/NoticeForm.js';
 import NoticeAdminService from './service/notice-admin-svc.js'
 
-import * as j from 'https://cdn.skypack.dev/jquery'
+// import * as j from 'https://cdn.skypack.dev/jquery'
 
-const { createApp, ref } = Vue
+const { createApp} = Vue;
 const bm = new _L.BindModel(new NoticeAdminService());  
 
 bm.url =' /notice/data/list.json';
@@ -12,7 +12,6 @@ bm.url =' /notice/data/list.json';
 const app = createApp({
   data() {
     return {
-      notices: [],
       selectedNotice: null,
       statusOptions: {
         'D': 'Standby',
@@ -29,6 +28,9 @@ const app = createApp({
     deselectNotice() {
       this.selectedNotice = null;
     },
+    updateNoticeList() {
+      this.$refs.noticeList.listClick();
+    }
   },
   components: {
     'notice-list': NoticeList,

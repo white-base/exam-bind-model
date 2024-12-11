@@ -1,6 +1,6 @@
 export default {
     props: ['bindModel'],
-    emits: ['select-notice'],
+    emits: ['select-notice', 'deselect-notice'],
     template: `
       <table class="table">
         <thead>
@@ -23,9 +23,13 @@ export default {
       </table>
     `,
     async created() {     
-      await this.bindModel.cmd['list'].execute();
+      this.listClick();
     },
     methods: {
+      async listClick() {     
+        await this.bindModel.cmd['list'].execute();
+        if (this.bindModel.cmd['list'].state > 0) this.$emit('deselect-notice');
+      },
       async readClick(idx) {
         this.bindModel.cmd['read'].outputOption.index = Number(idx);
         await this.bindModel.cmd['read'].execute();
