@@ -9,10 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "logic-bind-model": "file:../bind-model",
+    "logic-bind-model": "github:white-base/bind-model",
     "vite": "^5.4.3"
   },
   "devDependencies": {
-    "chai": "^5.1.1"
+    "axios": "^1.7.9",
+    "chai": "^5.1.1",
+    "jest": "^29.7.0",
+    "jsdom": "^26.0.0"
   }
 }
