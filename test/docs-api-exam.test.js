@@ -749,47 +749,184 @@ describe("[target: exam BindModel]", () => {
         describe("BindCommand 클래스", () => {
             describe("_baseTable", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
 
+                    expect(bm._baseTable === bm.first).toBe(T)
+                    expect(bm._baseTable === bm._tables['first']).toBe(T)
+                    expect(bm._baseTable === bm._tables[0]).toBe(T)
                 });
             });
             describe("_outputs", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('list');
                     
+                    // 출력 뷰 추가
+                    bm.command['list'].newOutput();
+                    
+                    // 명령 실행
+                    bm.command['list'].execute();
+                    
+                    expect(bm.command['list']._outputs[0] instanceof MetaView)
+                    expect(bm.command['list']._outputs[1] instanceof MetaView)  
                 });
             });
             describe("_model", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    bm.addColumnValue('u_id', 'abc');
+                    bm.addCommand('list');
                     
+                    bm.command['list'].cbBegin = function(cmd) {
+                        console.log(cmd._model.columns['u_id'].value); // Out: 'abc'
+                    };                    
                 });
             });
             describe("config", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    bm.addCommand('cmd1');
                     
+                    // 명령의 서버 요청 설정
+                    bm.command['cmd1'].config = {
+                        method: 'GET',
+                        url: '/api/users',
+                        headers: { Authorization: 'Bearer token123' },
+                        timeout: 5000
+                    };
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("url", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // URL 설정
+                    bm.command['cmd1'].url = '/api/data';
+                    
+                    bm.command['cmd1'].execute();                    
+                });
+                it("- 동적 url 설정", () => {
+                    const bm = new BindModel();
+
+                    // 명령 및 컬럼 추가
+                    bm.addCommand('cmd1');
+                    bm.addColumnValue('u_id', 10);
+                    
+                    // 동적 URL 설정
+                    bm.command['cmd1'].cbBegin = function(cmd) {
+                        const userId = cmd._model.columns['u_id'].value;
+                        cmd.url = `/api/users/${userId}`;
+                    };
+                    
+                    bm.command['cmd1'].execute();                  
                 });
             });
             describe("outputOption", () => {
-                it("- 예제", () => {
+                it("- outputOption 직접 설정", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가 
+                    bm.addCommand('cmd1');
+                    bm.addCommand('cmd2');
+                    bm.addCommand('cmd3');
+                    bm.addCommand('cmd4');
                     
+                    // 및 outputOption 설정
+                    bm.command['cmd2'].outputOption = 1;
+                    bm.command['cmd3'].outOpt = { option: 2 }
+                    bm.command['cmd4'].outputOption = { option: 3, index: 2 };
+                    // 명령 실행
+                    bm.command['cmd1'].execute();   // option = 0, index = 0
+                    bm.command['cmd2'].execute();   // option = 1, index = 0
+                    bm.command['cmd3'].execute();   // option = 2, index = 0
+                    bm.command['cmd4'].execute();   // option = 3, index = 2                    
+                });
+                it("- 명령 추가시 outputOption 설정", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가 및 outputOption 설정
+                    bm.addCommand('cmd1');
+                    bm.addCommand('cmd2', 1);
+                    bm.addCommand('cmd3', { option: 2});
+                    bm.addCommand('cmd4', { option: 3, index: 2 });
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();   // option = 0, index = 0
+                    bm.command['cmd2'].execute();   // option = 1, index = 0
+                    bm.command['cmd3'].execute();   // option = 2, index = 0
+                    bm.command['cmd4'].execute();   // option = 3, index = 2
                 });
             });
             describe("valid", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
 
+                    bm.addCommand('cmd1');
+                    
+                    // 컬럼 추가
+                    bm.command['cmd1'].valid.columns.add('u_id');
+                    bm.command['cmd1'].valid.columns.add('phone');
+                    // 위와 동일
+                    // bm.command['cmd1'].addColumn('u_id', 'valid');
+                    // bm.command['cmd1'].addColumn('phone', 'valid');
+                    
+                    // 제약 조건 설정
+                    bm.columns['u_id'].required = true;
+                    bm.columns['phone'].constraints = {
+                        regex: /^\d{10,11}$/,
+                        msg: '전화번호는 10~11자리 숫자여야 합니다.'
+                    };
+                    
+                    bm.command['cmd1'].execute();
                 });
             });
             describe("bind", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    bm.addCommand('cmd1');
                     
+                    // 컬럼 추가
+                    bm.command['cmd1'].bind.columns.add('u_id');
+                    bm.command['cmd1'].bind.columns.add('email');
+                    bm.command['cmd1'].bind.columns['u_id'].value = 101;
+                    bm.command['cmd1'].bind.columns['email'].value = 'abc@gmail.com';
+                    // 위와 동일
+                    // bm.command['cmd1'].addColumnValue('u_id', 101, 'bind');
+                    // bm.command['cmd1'].addColumnValue('email', abc@gmail.com, 'bind');
+                    
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("output", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가 : 첫번째 데이터(row)를 컬럼값에 설정
+                    bm.addCommand('cmd1', 3);
                     
+                    // 응답 데이터를 처리할 컬럼 추가
+                    bm.command['cmd1'].output.columns.add('u_id');
+                    bm.command['cmd1'].output.columns.add('u_name');
+                    // 위와 동일
+                    // bm.command['cmd1'].addColumn('u_id', 'output');
+                    // bm.command['cmd1'].addColumn('u_name', 'output');
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();
+                    
+                    console.log(bm.columns['u_id']);  // [Object HTMLColumn]
+                    console.log(bm.command['u_name']); // [Object HTMLColumn]                    
                 });
             });
             describe("misc", () => {
@@ -799,77 +936,396 @@ describe("[target: exam BindModel]", () => {
             });
             describe("cbBegin", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가 및 컬럼 값 설정
+                    bm.addCommand('cmd1');
+                    bm.addColumnValue('u_id', 100);
                     
+                    // 콜백 함수 설정
+                    bm.command['cmd1'].cbBegin = function(cmd) {
+                        const userId = cmd._model.columns['u_id'].value;
+                        cmd.url = `/api/users/${userId}`;
+                    };
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("cbValid", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
 
+                    // 명령 추가 
+                    bm.addCommand('cmd1');
+                    
+                    // 컬럼 추가 및 뷰 매핑
+                    bm.addColumnValue('u_name', 'John', 'cmd1', 'valid');
+                    
+                    // 콜백 함수 설정
+                    bm.command['cmd1'].cbValid = function(view, cmd) {
+                        const username = view.columns['u_name'].value;
+                        if (username.length < 3) {
+                            alert('사용자 이름은 3자 이상이어야 합니다.');
+                            return false;
+                        }
+                        return true;
+                    };
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();
                 });
             });
             describe("cbBind", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('upload');
                     
+                    // 컬럼 추가 및 뷰 매핑
+                    bm.addColumnValue('file_name', 'file.txt', 'upload', 'bind');
+                    bm.addColumnValue('file_size', 2048, 'upload', 'bind');
+                    
+                    // 콜백 함수 설정
+                    bm.command['upload'].cbBind = function(bind, cmd, config) {
+                        config.headers = {
+                            'Content-Type': 'application/json'
+                        };
+                    };
+                    
+                    // 명령 실행
+                    bm.command['upload'].execute();                    
                 });
             });
             describe("cbResult", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // 콜백 함수 설정
+                    bm.command['cmd1'].cbResult = function(data, cmd, response) {
+                        return { rows: data.rows.filter(product => product.inStock) };
+                    };
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("cbOutput", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가 (1: 모든 데이터 가져오기)
+                    bm.addCommand('cmd1', 1);
                     
+                    // 콜백 함수 설정
+                    bm.command['cmd1'].cbOutput = function(outputs, cmd, response) {
+                        const output = outputs[0]; // 첫번째 기본 MetaView
+                        output.rows.forEach(product => {
+                            console.log(`Product ID: ${product.id}, Name: ${product.name}`);
+                        });
+                    };
+                    
+                    bm.command['cmd1'].execute();
+                    // Product ID: ...., Name: ....                    
                 });
             });
             describe("cbEnd", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // 콜백 함수 설정
+                    bm.command['cmd1'].cbEnd = function(status, cmd, response) {
+                        if (status > 0) alert('데이터 저장이 완료되었습니다.');
+                        else alert('데이터 저장 중 오류가 발생했습니다.');
+                    };
+                    
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("execute()", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
 
+                    // 명령 추가
+                    bm.addCommand('cmd1');
+                    
+                    // 유효성 검사 및 서버 요청 추가
+                    bm.command['cmd1'].addColumn('u_name', ['valid', 'bind']);
+                    
+                    // 값 및 제약 조건 설정
+                    bm.columns['u_name'].require = true;
+                    bm.columns['u_name'].value = 'John';
+                    
+                    // 명령 실행
+                    bm.command['cmd1'].execute();
                 });
             });
             describe("addColumn()", () => {
-                it("- 예제", () => {
+                it("- 모든 뷰에 컬럼 추가", () => {
+                    const bm = new BindModel();
+
+                    // 명령 및 컬럼 추가
+                    bm.addCommand('cmd1');
+                    bm.command['cmd1'].addColumn('u_name');
+                    // 위와 동일
+                    // bm.command['cmd1'].addColumn('u_name', '$all'); 
                     
+                    console.log(bm.command['cmd1'].valid.columns['u_name']); // [Object HTMLColumn]
+                    console.log(bm.command['cmd1'].bind.columns['u_name']);  // [Object HTMLColumn]
+                    console.log(bm.command['cmd1'].output.columns['u_name']);// [Object HTMLColumn]
+                    console.log(bm.command['cmd1'].misc.columns['u_name']);  // [Object HTMLColumn]                    
+                });
+                it("- 특정 뷰에만 컬럼 등록", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 컬럼 추가 및 뷰에 참조 등록
+                    bm.command['cmd1'].addColumn('email', 'valid');
+                    bm.command['cmd1'].addColumn('phone', ['bind','output']);
+
+                    console.log(bm.command['cmd1'].valid.columns['email']); // [Object HTMLColumn]
+                    console.log(bm.command['cmd1'].bind.columns['phone']);  // [Object HTMLColumn]
+                    console.log(bm.command['cmd1'].output.columns['phone']);// [Object HTMLColumn]                    
+                });
+                it("- 사용자 정의 출력 뷰에 추가", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 출력 뷰 추가
+                    bm.command['cmd1'].newOutput('out2');
+
+                    // 컬럼 추가 및 추가 출력 뷰에 참조 등록
+                    bm.command['cmd1'].addColumn('address', 'out2');
+
+                    console.log(bm.command['cmd1'].out2.columns['address']); // [Object HTMLColumn]                    
                 });
             });
             describe("addColumnValue()", () => {
-                it("- 예제", () => {
+                it("- 모든 뷰에 컬럼 추가", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // 컬럼 초기값으로 등록
+                    bm.command['cmd1'].addColumnValue('u_name', 'John', ['$all']);
+                    
+                    console.log(bm.command['cmd1'].valid.columns['u_name'].value);  // Out: 'John'
+                    console.log(bm.command['cmd1'].bind.columns['u_name'].value);   // Out: 'John'
+                    console.log(bm.command['cmd1'].output.columns['u_name'].value); // Out: 'John'                    
+                });
+                it("- 특정 뷰에만 컬럼 등록", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 컬럼 추가 및 뷰에 매핑
+                    bm.command['cmd1'].addColumnValue('email', 'abc@gmail.com', 'valid');
+                    bm.command['cmd1'].addColumnValue('phone', '12345', ['bind','output']);
+
+                    console.log(bm.cmd['cmd1'].valid.columns['email'].value); // Out: 'abc@gmail.com'
+                    console.log(bm.cmd['cmd1'].bind.columns['phone'].value);  // Out: 12345
+                    console.log(bm.cmd['cmd1'].output.columns['phone'].value);// Out: 12345                    
+                });
+                it("- 사용자 정의 출력 뷰에 추가 ", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 출력 뷰 추가
+                    bm.command['cmd1'].newOutput('out2');
+
+                    // 컬럼 추가 및 뷰에 매핑
+                    bm.command['cmd1'].addColumnValue('address', 'Home', 'out2');
+
+                    console.log(bm.command['cmd1'].out2.columns['address'].value); // Out: 'Home'                    
                 });
             });
             describe("setColumn()", () => {
-                it("- 예제", () => {
+                it("- 단일 컬럼 설정", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
+                    bm.addCommand('cmd2');
+                    bm.addCommand('cmd3');
                     
+                    // 컬럼 추가
+                    bm.columns.addValue('aa', 10);
+                    bm.columns.addValue('bb', 20);
+                    bm.columns.addValue('cc', 30);
+                    
+                    // 컬럼 참조 설정
+                    bm.command['cmd1'].setColumn('aa', 'output');
+                    
+                    console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
+                    
+                    // 컬럼 참조 설정
+                    bm.command['cmd2'].setColumn(['bb', 'cc'], ['valid', 'bind']);
+
+                    console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
+                    console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30
+                    console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
+                    console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30  
+                    
+                    // 컬럼 참조 설정
+                    bm.command['cmd3'].setColumn('aa', '$all'); // views 기본값 : '$all'
+
+                    console.log(bm.command['cmd3'].valid.columns['aa'].value);  // Out: 10
+                    console.log(bm.command['cmd3'].bind.columns['aa'].value);   // Out: 10
+                    console.log(bm.command['cmd3'].output.columns['aa'].value); // Out: 10
+                });
+                it("- 테이블 설정 ", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
+                    
+                    // 테이블 추가
+                    bm.addTable('second');
+                    
+                    // 컬럼 추가
+                    bm.columns.addValue('aa', 10); 
+                    // 위와 동일
+                    // bm.first.columns.addValue('aa', 10);
+                    bm.second.columns.addValue('bb', 20);
+                    
+                    // 컬럼 참조 설정
+                    bm.command['cmd1'].setColumn(['aa', 'second.bb'], 'valid');
+                    
+                    console.log(bm.command['cmd1'].valid.columns['aa'].value); // Out: 10
+                    console.log(bm.command['cmd1'].valid.columns['bb'].value); // Out: 20
+                    bm.cmd['cmd1'].output.columns['aa'] === bm.first.columns['aa']  // true
+                    bm.cmd['cmd1'].output.columns['bb'] === bm.second.columns['bb'] // true                    
                 });
             });
             describe("release()", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // 컬럼 추가
+                    bm.columns.addValue('aa', 10);
+                    
+                    // 컬럼 매핑
+                    bm.command['cmd1'].setColumn('aa', '$all');
+                    
+                    console.log(bm.command['cmd1'].valid.columns['aa'].value);  // Out: 10
+                    console.log(bm.command['cmd1'].bind.columns['aa'].value);   // Out: 10
+                    console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
+                    console.log(bm.command['cmd1'].misc.columns['aa'].value);   // Out: 10  
+                });
+                it("- 예제", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+                    bm.columns.addValue('aa', 10);
+                    bm.command['cmd1'].setColumn('aa', '$all');
+
+                    // 컬럼 해제
+                    bm.command['cmd1'].release('aa', ['valid', 'bind']);
+
+                    console.log(bm.command['cmd1'].output.columns['aa'].value); // 10
+                });
+                it("- 예제", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+                    bm.columns.addValue('aa', 10);
+                    bm.command['cmd1'].setColumn('aa', '$all');
+
+                    // 컬럼 해제
+                    bm.command['cmd1'].release('aa'); 
+                    // 위와 동일
+                    // bm.command['cmd1'].release('aa', '$all');
+
+                    console.log(bm.command['cmd1'].valid.columns.count);  // Out: 0
+                    console.log(bm.command['cmd1'].bind.columns.count);   // Out: 0
+                    console.log(bm.command['cmd1'].output.columns.count); // Out: 0
+                    console.log(bm.command['cmd1'].misc.columns.count);   // Out: 0
                 });
             });
             describe("newOutput()	", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
 
+                    // 명령 추가
+                    bm.addCommand('cmd1');
+                    
+                    bm.command['cmd1'].output === bm.command['cmd1'].output1 // true
+                });
+                it("- 예제", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 출력 뷰 추가
+                    bm.command['cmd1'].newOutput('info');
+
+                    bm.cmd['cmd1'].ouput2 === bm.cmd['cmd1'].info  // true
+                    console.log(bm.command['cmd1'].info);          // [Object MetaView]
+                    console.log(bm.command['cmd1'].ouput2);        // [Object MetaView]
+                });
+                it("- 예제", () => {
+                    const bm = new BindModel();
+                    bm.addCommand('cmd1');
+
+                    // 출력 뷰 추가
+                    bm.command['cmd1'].newOutput();
+
+                    console.log(bm.command['cmd1'].ouput3); // [Object MetaView]
                 });
             });
             describe("removeOutput()", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    // 명령 추가
+                    bm.addCommand('cmd1');
                     
+                    // 출력 뷰 추가
+                    bm.command['cmd1'].newOutput('customView');
+                    
+                    console.log(bm.command['cmd1'].customView); // [Object MetaView]
+                    console.log(bm.command['cmd1'].output2);    // [Object MetaView]
+                    
+                    // 출력 뷰 제거
+                    bm.command['cmd1'].removeOutput('customView');
+                    
+                    console.log(bm.command['cmd1'].customView); // Out: undefined
+                    console.log(bm.command['cmd1'].output2);    // Out: undefined                    
                 });
             });
             describe("onExecute", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    bm.addCommand('cmd1');
                     
+                    // 이벤트 등록
+                    bm.command['cmd1'].onExecute = function(model, cmd) {
+                        console.log('Execute start...');
+                    };
+                    
+                    bm.command['cmd1'].execute();                    
                 });
             });
             describe("onExecuted", () => {
                 it("- 예제", () => {
+                    const bm = new BindModel();
+
+                    bm.addCommand('cmd1');
                     
+                    // 이벤트 등록
+                    bm.command['cmd1'].onExecuted = function(model, cmd) {
+                        console.log('Execute End...');
+                    };
+                    
+                    bm.command['cmd1'].execute();                    
                 });
             });
         });
