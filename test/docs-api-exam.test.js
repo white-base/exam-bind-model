@@ -774,7 +774,7 @@ describe("[target: exam BindModel]", () => {
                 });
             });
             describe("_model", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addColumnValue('u_id', 'abc');
@@ -782,11 +782,14 @@ describe("[target: exam BindModel]", () => {
                     
                     bm.command['list'].cbBegin = function(cmd) {
                         console.log(cmd._model.columns['u_id'].value); // Out: 'abc'
-                    };                    
+                    };
+                    
+                    await bm.cmd['list'].exec();
+                    expect(logSpy.mock.calls[0][0]).toBe('abc')
                 });
             });
             describe("config", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addCommand('cmd1');
@@ -799,8 +802,21 @@ describe("[target: exam BindModel]", () => {
                         timeout: 5000
                     };
                     
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(config) 
+                    }
+
                     // 명령 실행
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();
+
+                    expect(logSpy.mock.calls[0][0]).toEqual({
+                        method: 'GET',
+                        url: '/api/users',
+                        headers: { Authorization: 'Bearer token123' },
+                        timeout: 5000,
+                        responseType: "json",
+                        data: {}
+                    })
                 });
             });
             describe("url", () => {
@@ -813,7 +829,12 @@ describe("[target: exam BindModel]", () => {
                     // URL 설정
                     bm.command['cmd1'].url = '/api/data';
                     
-                    bm.command['cmd1'].execute();                    
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(config.url) 
+                    }
+                    bm.command['cmd1'].execute();       
+                    
+                    expect(logSpy.mock.calls[0][0]).toBe('/api/data')
                 });
                 it("- 동적 url 설정", () => {
                     const bm = new BindModel();
@@ -828,7 +849,12 @@ describe("[target: exam BindModel]", () => {
                         cmd.url = `/api/users/${userId}`;
                     };
                     
-                    bm.command['cmd1'].execute();                  
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(config.url) 
+                    }
+                    bm.command['cmd1'].execute();     
+                    
+                    expect(logSpy.mock.calls[0][0]).toBe('/api/users/10')
                 });
             });
             describe("outputOption", () => {
@@ -849,7 +875,12 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].execute();   // option = 0, index = 0
                     bm.command['cmd2'].execute();   // option = 1, index = 0
                     bm.command['cmd3'].execute();   // option = 2, index = 0
-                    bm.command['cmd4'].execute();   // option = 3, index = 2                    
+                    bm.command['cmd4'].execute();   // option = 3, index = 2 
+                    
+                    expect(bm.cmd['cmd1'].outOpt).toEqual({ option: 0, index: 0 })
+                    expect(bm.cmd['cmd2'].outOpt).toEqual({ option: 1, index: 0 })
+                    expect(bm.cmd['cmd3'].outOpt).toEqual({ option: 2, index: 0 })
+                    expect(bm.cmd['cmd4'].outOpt).toEqual({ option: 3, index: 2 })
                 });
                 it("- 명령 추가시 outputOption 설정", () => {
                     const bm = new BindModel();
@@ -865,10 +896,15 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd2'].execute();   // option = 1, index = 0
                     bm.command['cmd3'].execute();   // option = 2, index = 0
                     bm.command['cmd4'].execute();   // option = 3, index = 2
+
+                    expect(bm.cmd['cmd1'].outOpt).toEqual({ option: 0, index: 0 })
+                    expect(bm.cmd['cmd2'].outOpt).toEqual({ option: 1, index: 0 })
+                    expect(bm.cmd['cmd3'].outOpt).toEqual({ option: 2, index: 0 })
+                    expect(bm.cmd['cmd4'].outOpt).toEqual({ option: 3, index: 2 })
                 });
             });
             describe("valid", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addCommand('cmd1');
@@ -887,11 +923,14 @@ describe("[target: exam BindModel]", () => {
                         msg: '전화번호는 10~11자리 숫자여야 합니다.'
                     };
                     
-                    bm.command['cmd1'].execute();
+                    await bm.command['cmd1'].execute();
+
+                    expect(warnSpy.mock.calls[0][0]).toMatch(/EL05138/)
+
                 });
             });
             describe("bind", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addCommand('cmd1');
@@ -903,13 +942,32 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].bind.columns['email'].value = 'abc@gmail.com';
                     // 위와 동일
                     // bm.command['cmd1'].addColumnValue('u_id', 101, 'bind');
-                    // bm.command['cmd1'].addColumnValue('email', abc@gmail.com, 'bind');
+                    // bm.command['cmd1'].addColumnValue('email', 'abc@gmail.com', 'bind');
                     
-                    bm.command['cmd1'].execute();                    
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(config.data) 
+                    }
+
+                    await bm.command['cmd1'].execute();   
+                    
+                    expect(logSpy.mock.calls[0][0]).toEqual({
+                        "email": "abc@gmail.com",
+                        "u_id": 101
+                    })
                 });
             });
             describe("output", () => {
-                it("- 예제", () => {
+                beforeEach(() => {
+                    const body = {
+                        "rows": {
+                            "u_id": 10,
+                            "u_name": "AA"
+                        }
+                    };
+                    const res = {data: body, status: 200};
+                    axios.mockResolvedValue(res);
+                });
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가 : 첫번째 데이터(row)를 컬럼값에 설정
@@ -923,10 +981,13 @@ describe("[target: exam BindModel]", () => {
                     // bm.command['cmd1'].addColumn('u_name', 'output');
                     
                     // 명령 실행
-                    bm.command['cmd1'].execute();
+                    await bm.command['cmd1'].execute();
                     
                     console.log(bm.columns['u_id']);  // [Object HTMLColumn]
-                    console.log(bm.command['u_name']); // [Object HTMLColumn]                    
+                    console.log(bm.command['u_name']); // [Object HTMLColumn]        
+                    
+                    expect(bm.columns['u_id'].value).toBe(10)
+                    expect(bm.columns['u_name'].value).toBe('AA')
                 });
             });
             describe("misc", () => {
@@ -935,7 +996,7 @@ describe("[target: exam BindModel]", () => {
                 });
             });
             describe("cbBegin", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가 및 컬럼 값 설정
@@ -948,12 +1009,18 @@ describe("[target: exam BindModel]", () => {
                         cmd.url = `/api/users/${userId}`;
                     };
                     
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(cmd.url) 
+                    }
+
                     // 명령 실행
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();       
+                   
+                    expect(logSpy.mock.calls[0][0]).toBe('/api/users/100')
                 });
             });
             describe("cbValid", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가 
@@ -965,19 +1032,22 @@ describe("[target: exam BindModel]", () => {
                     // 콜백 함수 설정
                     bm.command['cmd1'].cbValid = function(view, cmd) {
                         const username = view.columns['u_name'].value;
-                        if (username.length < 3) {
-                            alert('사용자 이름은 3자 이상이어야 합니다.');
+                        if (username.length < 5) {
+                            console.log('사용자 이름은 5자 이상이어야 합니다.');
                             return false;
                         }
                         return true;
                     };
                     
                     // 명령 실행
-                    bm.command['cmd1'].execute();
+                    await bm.command['cmd1'].execute();
+
+                    expect(logSpy.mock.calls[0][0]).toBe('사용자 이름은 5자 이상이어야 합니다.')
+                    expect(warnSpy.mock.calls[0][0]).toBe('Failed. Err:valid 검사가 실패하였습니다.')
                 });
             });
             describe("cbBind", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가
@@ -992,18 +1062,33 @@ describe("[target: exam BindModel]", () => {
                         config.headers = {
                             'Content-Type': 'application/json'
                         };
+                        console.log(config.headers)
                     };
                     
                     // 명령 실행
-                    bm.command['upload'].execute();                    
+                    await bm.command['upload'].execute();       
+                    
+                    expect(logSpy.mock.calls[0][0]).toEqual({'Content-Type': 'application/json'})
+                    
                 });
             });
             describe("cbResult", () => {
-                it("- 예제", () => {
+                beforeEach(() => {
+                    const body = {
+                        "rows": [
+                            { "u_id": 10, "inStock": true },
+                            { "u_id": 20, "inStock": false },
+                            { "u_id": 30, "inStock": true }
+                        ] 
+                    };
+                    const res = {data: body, status: 200};
+                    axios.mockResolvedValue(res);
+                });
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가
-                    bm.addCommand('cmd1');
+                    bm.addCommand('cmd1', 1);
                     
                     // 콜백 함수 설정
                     bm.command['cmd1'].cbResult = function(data, cmd, response) {
@@ -1011,11 +1096,23 @@ describe("[target: exam BindModel]", () => {
                     };
                     
                     // 명령 실행
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();     
+                    
+                    expect(bm.command['cmd1'].output.rows.count).toBe(2)
                 });
             });
             describe("cbOutput", () => {
-                it("- 예제", () => {
+                beforeEach(() => {
+                    const body = {
+                        "rows": [
+                            { "u_id": 10, "name": 'John' },
+                            { "u_id": 20, "name": 'Jane' }
+                        ] 
+                    };
+                    const res = {data: body, status: 200};
+                    axios.mockResolvedValue(res);
+                });
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가 (1: 모든 데이터 가져오기)
@@ -1025,16 +1122,19 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].cbOutput = function(outputs, cmd, response) {
                         const output = outputs[0]; // 첫번째 기본 MetaView
                         output.rows.forEach(product => {
-                            console.log(`Product ID: ${product.id}, Name: ${product.name}`);
+                            console.log(`Product ID: ${product.u_id}, Name: ${product.name}`);
                         });
                     };
                     
-                    bm.command['cmd1'].execute();
-                    // Product ID: ...., Name: ....                    
+                    await bm.command['cmd1'].execute();
+
+                    expect(logSpy.mock.calls[0][0]).toBe('Product ID: 10, Name: John')
+                    expect(logSpy.mock.calls[1][0]).toBe('Product ID: 20, Name: Jane')
+
                 });
             });
             describe("cbEnd", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가
@@ -1042,15 +1142,19 @@ describe("[target: exam BindModel]", () => {
                     
                     // 콜백 함수 설정
                     bm.command['cmd1'].cbEnd = function(status, cmd, response) {
-                        if (status > 0) alert('데이터 저장이 완료되었습니다.');
-                        else alert('데이터 저장 중 오류가 발생했습니다.');
+                        if (status > 0) console.log('데이터 저장이 완료되었습니다.');
+                        else console.log('데이터 저장 중 오류가 발생했습니다.');
                     };
                     
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();    
+                    
+                    expect(logSpy.mock.calls[0][0]).toBe('데이터 저장 중 오류가 발생했습니다.')
+                    expect(errorSpy.mock.calls[0][0]).toMatch(/An error has occurred/)
+                    
                 });
             });
             describe("execute()", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     // 명령 추가
@@ -1063,8 +1167,14 @@ describe("[target: exam BindModel]", () => {
                     bm.columns['u_name'].require = true;
                     bm.columns['u_name'].value = 'John';
                     
+                    bm.cbBaseBind = (bind, cmd, config) => { 
+                        console.log(config.data) 
+                    }
+
                     // 명령 실행
-                    bm.command['cmd1'].execute();
+                    await bm.command['cmd1'].execute();
+
+                    expect(logSpy.mock.calls[0][0]).toEqual({"u_name": "John"})
                 });
             });
             describe("addColumn()", () => {
@@ -1076,11 +1186,16 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].addColumn('u_name');
                     // 위와 동일
                     // bm.command['cmd1'].addColumn('u_name', '$all'); 
+                   
+                    // console.log(bm.command['cmd1'].valid.columns['u_name']); // [Object HTMLColumn]
+                    // console.log(bm.command['cmd1'].bind.columns['u_name']);  // [Object HTMLColumn]
+                    // console.log(bm.command['cmd1'].output.columns['u_name']);// [Object HTMLColumn]
+                    // console.log(bm.command['cmd1'].misc.columns['u_name']);  // [Object HTMLColumn]
                     
-                    console.log(bm.command['cmd1'].valid.columns['u_name']); // [Object HTMLColumn]
-                    console.log(bm.command['cmd1'].bind.columns['u_name']);  // [Object HTMLColumn]
-                    console.log(bm.command['cmd1'].output.columns['u_name']);// [Object HTMLColumn]
-                    console.log(bm.command['cmd1'].misc.columns['u_name']);  // [Object HTMLColumn]                    
+                    expect(bm.cmd['cmd1'].valid.cols['u_name'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].bind.cols['u_name'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].output.cols['u_name'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].misc.cols['u_name'] instanceof HTMLColumn).toBe(T)
                 });
                 it("- 특정 뷰에만 컬럼 등록", () => {
                     const bm = new BindModel();
@@ -1090,9 +1205,14 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].addColumn('email', 'valid');
                     bm.command['cmd1'].addColumn('phone', ['bind','output']);
 
-                    console.log(bm.command['cmd1'].valid.columns['email']); // [Object HTMLColumn]
-                    console.log(bm.command['cmd1'].bind.columns['phone']);  // [Object HTMLColumn]
-                    console.log(bm.command['cmd1'].output.columns['phone']);// [Object HTMLColumn]                    
+                    // console.log(bm.command['cmd1'].valid.columns['email']); // [Object HTMLColumn]
+                    // console.log(bm.command['cmd1'].bind.columns['phone']);  // [Object HTMLColumn]
+                    // console.log(bm.command['cmd1'].output.columns['phone']);// [Object HTMLColumn]                    
+
+                    expect(bm.cmd['cmd1'].valid.cols['email'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].bind.cols['phone'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].output.cols['phone'] instanceof HTMLColumn).toBe(T)
+
                 });
                 it("- 사용자 정의 출력 뷰에 추가", () => {
                     const bm = new BindModel();
@@ -1104,7 +1224,9 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 추가 및 추가 출력 뷰에 참조 등록
                     bm.command['cmd1'].addColumn('address', 'out2');
 
-                    console.log(bm.command['cmd1'].out2.columns['address']); // [Object HTMLColumn]                    
+                    // console.log(bm.command['cmd1'].out2.columns['address']); // [Object HTMLColumn]                    
+
+                    expect(bm.cmd['cmd1'].out2.cols['address'] instanceof HTMLColumn).toBe(T)
                 });
             });
             describe("addColumnValue()", () => {
@@ -1117,9 +1239,13 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 초기값으로 등록
                     bm.command['cmd1'].addColumnValue('u_name', 'John', ['$all']);
                     
-                    console.log(bm.command['cmd1'].valid.columns['u_name'].value);  // Out: 'John'
-                    console.log(bm.command['cmd1'].bind.columns['u_name'].value);   // Out: 'John'
-                    console.log(bm.command['cmd1'].output.columns['u_name'].value); // Out: 'John'                    
+                    // console.log(bm.command['cmd1'].valid.columns['u_name'].value);  // Out: 'John'
+                    // console.log(bm.command['cmd1'].bind.columns['u_name'].value);   // Out: 'John'
+                    // console.log(bm.command['cmd1'].output.columns['u_name'].value); // Out: 'John'                    
+                    
+                    expect(bm.cmd['cmd1'].valid.cols['u_name'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].bind.cols['u_name'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].output.cols['u_name'] instanceof HTMLColumn).toBe(T)
                 });
                 it("- 특정 뷰에만 컬럼 등록", () => {
                     const bm = new BindModel();
@@ -1129,9 +1255,13 @@ describe("[target: exam BindModel]", () => {
                     bm.command['cmd1'].addColumnValue('email', 'abc@gmail.com', 'valid');
                     bm.command['cmd1'].addColumnValue('phone', '12345', ['bind','output']);
 
-                    console.log(bm.cmd['cmd1'].valid.columns['email'].value); // Out: 'abc@gmail.com'
-                    console.log(bm.cmd['cmd1'].bind.columns['phone'].value);  // Out: 12345
-                    console.log(bm.cmd['cmd1'].output.columns['phone'].value);// Out: 12345                    
+                    // console.log(bm.cmd['cmd1'].valid.columns['email'].value); // Out: 'abc@gmail.com'
+                    // console.log(bm.cmd['cmd1'].bind.columns['phone'].value);  // Out: 12345
+                    // console.log(bm.cmd['cmd1'].output.columns['phone'].value);// Out: 12345                    
+                    
+                    expect(bm.cmd['cmd1'].valid.cols['email'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].bind.cols['phone'] instanceof HTMLColumn).toBe(T)
+                    expect(bm.cmd['cmd1'].output.cols['phone'] instanceof HTMLColumn).toBe(T)
                 });
                 it("- 사용자 정의 출력 뷰에 추가 ", () => {
                     const bm = new BindModel();
@@ -1143,7 +1273,9 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 추가 및 뷰에 매핑
                     bm.command['cmd1'].addColumnValue('address', 'Home', 'out2');
 
-                    console.log(bm.command['cmd1'].out2.columns['address'].value); // Out: 'Home'                    
+                    // console.log(bm.command['cmd1'].out2.columns['address'].value); // Out: 'Home'                    
+                    
+                    expect(bm.cmd['cmd1'].out2.cols['address'].value).toBe('Home')
                 });
             });
             describe("setColumn()", () => {
@@ -1163,22 +1295,33 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 참조 설정
                     bm.command['cmd1'].setColumn('aa', 'output');
                     
-                    console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
+                    // console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
+                    
+                    expect(bm.cmd['cmd1'].output.cols['aa'].value).toBe(10)
                     
                     // 컬럼 참조 설정
                     bm.command['cmd2'].setColumn(['bb', 'cc'], ['valid', 'bind']);
 
-                    console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
-                    console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30
-                    console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
-                    console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30  
+                    // console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
+                    // console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30
+                    // console.log(bm.command['cmd2'].valid.columns['bb'].value);  // Out: 20
+                    // console.log(bm.command['cmd2'].bind.columns['cc'].value);   // Out: 30  
                     
+                    expect(bm.cmd['cmd2'].valid.cols['bb'].value).toBe(20)
+                    expect(bm.cmd['cmd2'].bind.cols['cc'].value).toBe(30)
+                    expect(bm.cmd['cmd2'].valid.cols['bb'].value).toBe(20)
+                    expect(bm.cmd['cmd2'].bind.cols['cc'].value).toBe(30)
+
                     // 컬럼 참조 설정
                     bm.command['cmd3'].setColumn('aa', '$all'); // views 기본값 : '$all'
 
-                    console.log(bm.command['cmd3'].valid.columns['aa'].value);  // Out: 10
-                    console.log(bm.command['cmd3'].bind.columns['aa'].value);   // Out: 10
-                    console.log(bm.command['cmd3'].output.columns['aa'].value); // Out: 10
+                    // console.log(bm.command['cmd3'].valid.columns['aa'].value);  // Out: 10
+                    // console.log(bm.command['cmd3'].bind.columns['aa'].value);   // Out: 10
+                    // console.log(bm.command['cmd3'].output.columns['aa'].value); // Out: 10
+
+                    expect(bm.cmd['cmd3'].valid.cols['aa'].value).toBe(10)
+                    expect(bm.cmd['cmd3'].bind.cols['aa'].value).toBe(10)
+                    expect(bm.cmd['cmd3'].output.cols['aa'].value).toBe(10)
                 });
                 it("- 테이블 설정 ", () => {
                     const bm = new BindModel();
@@ -1198,10 +1341,15 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 참조 설정
                     bm.command['cmd1'].setColumn(['aa', 'second.bb'], 'valid');
                     
-                    console.log(bm.command['cmd1'].valid.columns['aa'].value); // Out: 10
-                    console.log(bm.command['cmd1'].valid.columns['bb'].value); // Out: 20
-                    bm.cmd['cmd1'].output.columns['aa'] === bm.first.columns['aa']  // true
-                    bm.cmd['cmd1'].output.columns['bb'] === bm.second.columns['bb'] // true                    
+                    // console.log(bm.command['cmd1'].valid.columns['aa'].value); // Out: 10
+                    // console.log(bm.command['cmd1'].valid.columns['bb'].value); // Out: 20
+                    // bm.cmd['cmd1'].valid.columns['aa'] === bm.first.columns['aa']  // true
+                    // bm.cmd['cmd1'].valid.columns['bb'] === bm.second.columns['bb'] // true  
+                    
+                    expect(bm.command['cmd1'].valid.columns['aa'].value).toBe(10)
+                    expect(bm.command['cmd1'].valid.columns['bb'].value).toBe(20)
+                    expect(bm.cmd['cmd1'].valid.cols['aa'] === bm.first.cols['aa']).toBe(T)
+                    expect(bm.cmd['cmd1'].valid.cols['bb'] === bm.second.cols['bb']).toBe(T)
                 });
             });
             describe("release()", () => {
@@ -1217,12 +1365,17 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 매핑
                     bm.command['cmd1'].setColumn('aa', '$all');
                     
-                    console.log(bm.command['cmd1'].valid.columns['aa'].value);  // Out: 10
-                    console.log(bm.command['cmd1'].bind.columns['aa'].value);   // Out: 10
-                    console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
-                    console.log(bm.command['cmd1'].misc.columns['aa'].value);   // Out: 10  
+                    // console.log(bm.command['cmd1'].valid.columns['aa'].value);  // Out: 10
+                    // console.log(bm.command['cmd1'].bind.columns['aa'].value);   // Out: 10
+                    // console.log(bm.command['cmd1'].output.columns['aa'].value); // Out: 10
+                    // console.log(bm.command['cmd1'].misc.columns['aa'].value);   // Out: 10  
+                    
+                    expect(bm.cmd['cmd1'].valid.cols['aa'].value).toBe(10)
+                    expect(bm.cmd['cmd1'].bind.cols['aa'].value).toBe(10)
+                    expect(bm.cmd['cmd1'].output.cols['aa'].value).toBe(10)
+                    expect(bm.cmd['cmd1'].misc.cols['aa'].value).toBe(10)
                 });
-                it("- 예제", () => {
+                it("- 일부 컬럼 해제", () => {
                     const bm = new BindModel();
                     bm.addCommand('cmd1');
                     bm.columns.addValue('aa', 10);
@@ -1231,9 +1384,11 @@ describe("[target: exam BindModel]", () => {
                     // 컬럼 해제
                     bm.command['cmd1'].release('aa', ['valid', 'bind']);
 
-                    console.log(bm.command['cmd1'].output.columns['aa'].value); // 10
+                    // console.log(bm.command['cmd1'].output.columns['aa'].value); // 10
+                    
+                    expect(bm.cmd['cmd1'].output.cols['aa'].value).toBe(10)
                 });
-                it("- 예제", () => {
+                it("- 모든 컬럼 해제 ", () => {
                     const bm = new BindModel();
                     bm.addCommand('cmd1');
                     bm.columns.addValue('aa', 10);
@@ -1244,22 +1399,29 @@ describe("[target: exam BindModel]", () => {
                     // 위와 동일
                     // bm.command['cmd1'].release('aa', '$all');
 
-                    console.log(bm.command['cmd1'].valid.columns.count);  // Out: 0
-                    console.log(bm.command['cmd1'].bind.columns.count);   // Out: 0
-                    console.log(bm.command['cmd1'].output.columns.count); // Out: 0
-                    console.log(bm.command['cmd1'].misc.columns.count);   // Out: 0
+                    // console.log(bm.command['cmd1'].valid.columns.count);  // Out: 0
+                    // console.log(bm.command['cmd1'].bind.columns.count);   // Out: 0
+                    // console.log(bm.command['cmd1'].output.columns.count); // Out: 0
+                    // console.log(bm.command['cmd1'].misc.columns.count);   // Out: 0
+                    
+                    expect(bm.cmd['cmd1'].valid.cols.count).toBe(0)
+                    expect(bm.cmd['cmd1'].bind.cols.count).toBe(0)
+                    expect(bm.cmd['cmd1'].output.cols.count).toBe(0)
+                    expect(bm.cmd['cmd1'].misc.cols.count).toBe(0)
                 });
             });
-            describe("newOutput()	", () => {
-                it("- 예제", () => {
+            describe("newOutput()", () => {
+                it("- 기본뷰 뷰 추가", () => {
                     const bm = new BindModel();
 
                     // 명령 추가
                     bm.addCommand('cmd1');
                     
                     bm.command['cmd1'].output === bm.command['cmd1'].output1 // true
+                    
+                    expect(bm.command['cmd1'].output === bm.command['cmd1'].output1).toBe(T)
                 });
-                it("- 예제", () => {
+                it("- 지정한 이름으로 뷰 추가 ", () => {
                     const bm = new BindModel();
                     bm.addCommand('cmd1');
 
@@ -1269,15 +1431,20 @@ describe("[target: exam BindModel]", () => {
                     bm.cmd['cmd1'].ouput2 === bm.cmd['cmd1'].info  // true
                     console.log(bm.command['cmd1'].info);          // [Object MetaView]
                     console.log(bm.command['cmd1'].ouput2);        // [Object MetaView]
+
+                    expect(bm.cmd['cmd1'].output2 === bm.cmd['cmd1'].info).toBe(T)
+                    expect(bm.command['cmd1'].info instanceof MetaView).toBe(T)
+                    expect(bm.command['cmd1'].info instanceof MetaView).toBe(T)
                 });
-                it("- 예제", () => {
+                it("- 빈 이름으로 뷰 추가", () => {
                     const bm = new BindModel();
                     bm.addCommand('cmd1');
 
                     // 출력 뷰 추가
                     bm.command['cmd1'].newOutput();
 
-                    console.log(bm.command['cmd1'].ouput3); // [Object MetaView]
+                    console.log(); // [Object MetaView]
+                    expect(bm.command['cmd1'].output2 instanceof MetaView).toBe(T)
                 });
             });
             describe("removeOutput()", () => {
@@ -1293,15 +1460,21 @@ describe("[target: exam BindModel]", () => {
                     console.log(bm.command['cmd1'].customView); // [Object MetaView]
                     console.log(bm.command['cmd1'].output2);    // [Object MetaView]
                     
+                    expect(bm.command['cmd1'].customView instanceof MetaView).toBe(T)
+                    expect(bm.command['cmd1'].output2 instanceof MetaView).toBe(T)
+
                     // 출력 뷰 제거
                     bm.command['cmd1'].removeOutput('customView');
                     
                     console.log(bm.command['cmd1'].customView); // Out: undefined
-                    console.log(bm.command['cmd1'].output2);    // Out: undefined                    
+                    console.log(bm.command['cmd1'].output2);    // Out: undefined
+                    
+                    expect(bm.command['cmd1'].customView).toBe(undefined)
+                    expect(bm.command['cmd1'].output2).toBe(undefined)
                 });
             });
             describe("onExecute", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addCommand('cmd1');
@@ -1311,11 +1484,13 @@ describe("[target: exam BindModel]", () => {
                         console.log('Execute start...');
                     };
                     
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();   
+                    
+                    expect(logSpy.mock.calls[0][0]).toBe('Execute start...')
                 });
             });
             describe("onExecuted", () => {
-                it("- 예제", () => {
+                it("- 예제", async () => {
                     const bm = new BindModel();
 
                     bm.addCommand('cmd1');
@@ -1325,7 +1500,797 @@ describe("[target: exam BindModel]", () => {
                         console.log('Execute End...');
                     };
                     
-                    bm.command['cmd1'].execute();                    
+                    await bm.command['cmd1'].execute();     
+                    
+                    expect(logSpy.mock.calls[0][0]).toBe('Execute End...')
+                    
+                });
+            });
+        });
+        describe("MetaView 클래스", () => {
+            describe("_baseEntity", () => {
+                it("- 전체 참조 ", () => {
+                    const table1 = new MetaTable('t1');
+                    const view1 = new MetaView('v1');
+                    
+                    // 기본 엔티티 설정
+                    view1._baseEntity = table1;
+                    
+                    view1.columns.add('u_id');
+                    view1.columns.add('addr');
+                    
+                    view1.columns['u_id'] === table1.columns['u_id'] // true
+                    view1.columns['addr'] === table1.columns['addr'] // true                    
+                });
+                it("- 특정 컬럼만 참조", () => {
+                    const table1 = new MetaTable('t1');
+                    const view1 = new MetaView('v1');
+                    
+                    view1.columns.add('u_id', table1.columns);  // 컬럼 추가 시 컬렉션 지정
+                    view1.columns.add('addr');
+                    
+                    view1.columns['u_id'] === table1.columns['name'] // true
+                    console.log(view1.columns['addr']);              // [Object MetaColumn]                    
+                });
+                it("- 독립 사용 ", () => {
+                    const view1 = new MetaView('v1');
+
+                    view1.columns.addValue('addr', 'USA');
+                    
+                    console.log(view1.columns['addr'].value); // Out: 'USA'                    
+                });
+            });
+            describe("viewName", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('v1');
+
+                    console.log(view1.viewName); // Out: 'v1'
+                    console.log(view1._name);    // Out: 'v1'
+                    
+                    view1.viewName = 'v2';  // 이름 변경
+                    
+                    console.log(view1.viewName); // Out: 'v2'
+                    console.log(view1._name);    // Out: 'v2'                    
+                });
+            });
+            describe("columns", () => {
+                it("- 컬럼 추가", () => {
+                    const view1 = new MetaView('v1');
+
+                    // 빈 컬럼 추가
+                    view1.columns.add('u_id');
+                    
+                    // 초기값이 있는 컬럼 추가
+                    view1.columns.addValue('addr', 'USA');
+                    
+                    console.log(view1.columns['u_id']);         // [Object MetaColumn]
+                    console.log(view1.columns['addr'].value);   // 'USA'                    
+                });
+                it("- BindModel 에서 컬럼 추가", () => {
+                    const bm = new BindModel();
+
+                    // 기본 컬렉션에서 컬럼 추가
+                    bm.columns.add('gender');
+                    bm.columns.addValue('addr', 'USA');
+                    
+                    // 모델에서 컬럼 추가
+                    bm.addColumn('memo');
+                    bm.addColumnValue('age', 20);
+                    
+                    console.log(view1.columns['gender']);       // [Object MetaColumn]
+                    console.log(view1.columns['addr'].value);   // Out: 'USA'
+                    console.log(view1.columns['memo']);         // [Object MetaColumn]
+                    console.log(view1.columns['age'].value);    // Out: 20                    
+                });
+                it("- 컬럼 참조 사용", () => {
+                    const table1 = new MetaTable('t1');
+                    const view1 = new MetaView('v1');
+                    
+                    view1.columns.add('u_name', table1.columns);  // 컬럼 추가 시 컬렉션 지정
+                    view1.columns.add('addr');
+                    
+                    view1.columns['u_name'] === table1.columns['u_name'] // true
+                    console.log(view1.columns['addr']);                  // [Object MetaColumn]
+                                        
+                });
+            });
+            describe("rows", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view1.columns.add('u_name');
+                    view1.columns.add('age');
+                    
+                    // 행 추가
+                    const row = view1.newRow();
+                    row['u_name'] = 'John';
+                    row['age'] = 20;
+                    view1.rows.add(row);
+                    
+                    console.log(view1.rows[0]['u_name']); // Out: 'John'
+                    console.log(view1.rows[0]['age']);    // Out: 20                    
+                });
+            });
+            describe("clone()", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('v1');
+
+                    view1.columns.addValue('age', 20);
+                    
+                    // 뷰 복제
+                    const clone = view1.clone();
+                    
+                    consol.log(clone.viewName);  // Out: 'v1'
+                    clone.columns['age'] === view1.columns['age']             // false
+                    clone.columns['age'].value === view1.columns['age'].value // true               
+                });
+            });
+            describe("copy()", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('view1');
+
+                    // 컬럼 추가
+                    view1.columns.add('c1');
+                    view1.columns.add('c2');
+                    view1.columns.add('c3');
+                    
+                    // 행 추가 
+                    view1.rows.add(view1.newRow());
+                    view1.rows[0]['c1'] = 1;
+                    view1.rows[0]['c2'] = 2;
+                    view1.rows[0]['c3'] = 3;
+                    view1.rows.add(view1.newRow());
+                    view1.rows[1]['c1'] = 10;
+                    view1.rows[1]['c2'] = 20;
+                    view1.rows[1]['c3'] = 30;
+                    
+                    // 첫번째 복사
+                    const copy1 = view1.copy(row => row['c1'] < 10, ['c1']);
+                    
+                    console.log(copy1.rows.count);    // Out: 1
+                    console.log(copy1.rows[0]['c1']); // Out: 1
+                    
+                    // 두번째 복사
+                    const copy2 = view1.copy(['c1', 'c2']);
+                    
+                    console.log(copy2.rows[0]['c1']); // Out: 1
+                    console.log(copy2.rows[0]['c2']); // Out: 2
+                    console.log(copy2.rows[1]['c1']); // Out: 10
+                    console.log(copy2.rows[1]['c2']); // Out: 20                    
+                });
+            });
+            describe("clear()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('age');
+                    view.columns.add('u_name');
+                    
+                    // 데이터(행) 추가
+                    view.rows.add(view.newRow());
+                    view.rows[0].age = 10;
+                    view.rows[0].u_name = 'Alice';
+                    view.rows.add(view.newRow());
+                    view.rows[1].age = 20;
+                    view.rows[1].u_name = 'Bob';
+                    
+                    console.log(view.rows.count);    // Out: 2
+                    
+                    // 데이터 초기화
+                    view.clear();
+                    
+                    console.log(view.rows.count);    // Out: 0
+                    console.log(view.columns.count); // Out: 2                    
+                });
+            });
+            describe("reset()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('age');
+                    view.columns.add('u_name');
+                    
+                    // 데이터(행) 추가
+                    view.rows.add(view.newRow());
+                    view.rows[0].age = 10;
+                    view.rows[0].u_name = 'Alice';
+                    
+                    // 전체 초기화
+                    view.reset();
+                    
+                    console.log(view.viewName);      // Out: 'v1'
+                    console.log(view.rows.count);    // Out: 0
+                    console.log(view.columns.count); // Out: 0                    
+                });
+            });
+            describe("newRow()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('id');
+                    view.columns.add('name');
+                    
+                    // 데이터(행) 추가
+                    const row = view.newRow();
+                    row['age'] = 20;
+                    row['u_name'] = 'Alice';
+                    view.rows.add(row);
+                    
+                    console.log(view.rows[0]['age']);    // Out: 20
+                    console.log(view.rows[0]['u_name']); // Out: 'Alice'                    
+                });
+            });
+            describe("getValue()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.addValue('age', 20);
+                    view.columns.add('u_name');
+                    
+                    const row = table.getValue();
+                    
+                    console.log(row['age']);    // Out: 20
+                    console.log(row['u_name']); // Out: ''                    
+                });
+            });
+            describe("setValue()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('age');
+                    view.columns.add('u_name');
+                    view.columns['u_name'].alias = 'r_name';  // 별칭 설정
+                    
+                    // 행 생성
+                    const row = view.newRow();
+                    row['age'] = 20;
+                    row['r_name'] = 'Alice';
+                    
+                    // 컬럼값 설정
+                    view.setValue(row);
+                    
+                    // 행 추가
+                    view.rows.add(row);
+                    
+                    console.log(view.columns['age'].value);    // Out: 20
+                    console.log(view.columns['u_name'].value); // Out: 'Alice'
+                    console.log(view.rows[0]['age']);          // Out: 20
+                    console.log(view.rows[0]['r_name']);       // Out: 'Alice'                    
+                });
+            });
+            describe("merge()", () => {
+                it("- 컬럼 매칭 : 0", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2');
+                    
+                    // 데이터 행(row) 읽기 : read opt = 3
+                    view1.read({ rows: [{ c1: 'R1', c2: 'R2' }] }, 3);
+                    view2.read({ rows: [{ c1: 'R10', c2: 'R20' }] }, 3);
+                    
+                    // 병합 opt = 0
+                    view1.merge(view2, 0);
+                    
+                    console.log(view1.columns.count); // Out: 2
+                    console.log(view1.rows.count);    // Out: 2
+                    console.log(view1.rows[0]['c1']); // Out: 'R1'
+                    console.log(view1.rows[0]['c2']); // Out: 'R2'
+                    console.log(view1.rows[1]['c1']); // Out: 'R10'
+                    console.log(view1.rows[1]['c2']); // Out: 'R20'                    
+                });
+                it("- 컬럼 일부 매칭 : 0", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2');
+                    
+                    // 데이터 행(row) 읽기 : read opt = 3
+                    view1.read({ rows: [{ c1: 'R1', c2: 'R2' }] }, 3);
+                    view2.read({ rows: [{ c1: 'R10', c3: 'R30' }] }, 3);
+                    
+                    // 병합 opt = 0
+                    view1.merge(view2, 0);
+                    
+                    console.log(view1.columns.count); // Out: 2
+                    console.log(view1.rows.count);    // Out: 2
+                    console.log(view1.rows[0]['c1']); // Out: 'R1'
+                    console.log(view1.rows[0]['c2']); // Out: 'R2'
+                    console.log(view1.rows[1]['c1']); // Out: 'R10'
+                    console.log(view1.rows[1]['c2']); // Out: ''                    
+                });
+                it("- 컬럼 전부 비매칭 : 1", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2');
+                    
+                    // 데이터 행(row) 읽기 : read opt = 3
+                    view1.read({ rows: [{ c1: 'R1', c2: 'R2' }] }, 3);
+                    view2.read({ rows: [{ c3: 'R3', c4: 'R4' }, { c3: 'R30', c4: 'R40' }] }, 3);
+                    
+                    // 병합 opt = 1
+                    view1.merge(view2, 1);
+                    
+                    console.log(view1.columns.count); // Out: 4
+                    console.log(view1.rows.count);    // Out: 1
+                    console.log(view1.rows[0]['c1']); // Out: 'R1'
+                    console.log(view1.rows[0]['c2']); // Out: 'R2'
+                    console.log(view1.rows[0]['c3']); // Out: 'R3'
+                    console.log(view1.rows[0]['c4']); // Out: 'R4'                    
+                });
+                it("- 컬럼 일부 매칭 : 2", () => {
+                    const view1 = new MetaView('view1');
+                    const view2 = new MetaView('view2');
+                    
+                    // 데이터 행(row) 읽기
+                    view1.read({ rows: [{ c1: 'R1', c2: 'R2' }] }, 3);
+                    view2.read({ rows: [{ c1: 'R10', c3: 'R30' }] }, 3);
+                    
+                    // 병합 opt = 2
+                    view1.merge(view2, 2);
+                    
+                    console.log(view1.columns.count); // Out: 3
+                    console.log(view1.rows.count);    // Out: 2
+                    console.log(view1.rows[0]['c1']); // Out: 'R1'
+                    console.log(view1.rows[0]['c2']); // Out: 'R2'
+                    console.log(view1.rows[0]['c3']); // Out: ''
+                    console.log(view1.rows[1]['c1']); // Out: 'R10'
+                    console.log(view1.rows[1]['c2']); // Out: ''
+                    console.log(view1.rows[1]['c3']); // Out: 'R30'                    
+                });
+                it("- 컬럼 전부 비매칭 : 3", () => {
+                    const view1 = new MetaView('view1');
+                    const view2 = new MetaView('view2');
+                    
+                    // 데이터 행(row) 읽기
+                    view1.read({ rows: [{ c1: 'R1', c2: 'R2' }] }, 3);
+                    view2.read({ rows: [{ c3: 'R3', c4: 'R4' }, { c3: 'R30', c4: 'R40' }] }, 3);
+                    
+                    // 병합 opt = 3
+                    view1.merge(view2, 3);
+                    
+                    console.log(view1.columns.count); // Out: 4
+                    console.log(view1.rows.count);    // Out: 2
+                    console.log(view1.rows[0]['c1']); // Out: 'R1'
+                    console.log(view1.rows[0]['c2']); // Out: 'R2'
+                    console.log(view1.rows[0]['c3']); // Out: 'R3'
+                    console.log(view1.rows[0]['c4']); // Out: 'R4'
+                    console.log(view1.rows[1]['c1']); // Out: ''
+                    console.log(view1.rows[1]['c2']); // Out: ''
+                    console.log(view1.rows[1]['c3']); // Out: 'R30'
+                    console.log(view1.rows[1]['c4']); // Out: 'R40'                    
+                });
+            });
+            describe("select()", () => {
+                it("- 필터 함수로 데이터 선택", () => {
+                    const view1 = new MetaView('v1');
+
+                    // 데이터 행(row) 읽기
+                    view1.read({ rows: [{ c1: 10, c2: 'R2' }, { c1: 20, c2: 'R20' }]}, 3);
+                    
+                    // rows 선택
+                    const rows = view1.select(row => row['c1'] > 10);
+                    
+                    console.log(rows.length);   // Out: 1
+                    console.log(rows[0]['c1']); // Out: 20
+                    console.log(rows[0]['c2']); // Out: 'R20'                    
+                });
+                it("- 특정 컬럼 선택 ", () => {
+                    const view1 = new MetaView('V1');
+
+                    // 데이터 행(row) 읽기
+                    view1.read({ rows: [{ c1: 10, c2: 'R2' }, { c1: 20, c2: 'R20' }]}, 3);
+                    
+                    // rows 선택
+                    const rows = view1.select(['c1']);
+                    
+                    console.log(rows.length);   // Out: 2
+                    console.log(rows[0]['c1']); // Out: 10
+                    console.log(rows[1]['c1']); // Out: 20                    
+                });
+            });
+            describe("output()", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2');
+                    
+                    // 컬럼 추가
+                    view1.columns.addValue('c1', 10);
+                    
+                    // 문자열로 내보내기 : opt = 0
+                    const data1 = view1.output(); 
+                    
+                    // 문자열로 가져오기
+                    view2.load(data1);
+                    
+                    console.log(view1.viewName);            // Out: 'v1'
+                    console.log(view1.columns['c1'].value); // Out: 10
+                    console.log(view2.viewName);            // Out: 'v1'
+                    console.log(view2.columns['c1'].value); // Out: 10                    
+                });
+            });
+            describe("load()", () => {
+                it("- 예제", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2');
+                    const view3 = new MetaView('v3');
+                    
+                    // 컬럼 추가
+                    view1.columns.addValue('c1', 10);
+                    
+                    // 문자열로 내보내기
+                    const data1 = view1.output();
+                    // 객체로 내보내기
+                    const data2 = view1.getObject();
+                    
+                    // 문자열 불러오기
+                    view2.load(data1);
+                    // 객체 불러오기
+                    view3.load(data2);
+                    
+                    console.log(view1.viewName); // Out: 'v1'
+                    console.log(view2.viewName); // Out: 'v1'
+                    console.log(view3.viewName); // Out: 'v1'
+                    console.log(view1.columns['c1'].value); // Out: 10
+                    console.log(view2.columns['c1'].value); // Out: 10
+                    console.log(view3.columns['c1'].value); // Out: 10                    
+                });
+            });
+            describe("write()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('id', { default: 0, caption: 'Identifier', required: true });
+                    view.columns.add('name', { default: '', caption: 'Full Name' });
+                    
+                    // 행 추가
+                    view.rows.add(view.newRow());
+                    view.rows.add(view.newRow());
+                    view.rows[0]['id'] = 1;
+                    view.rows[0]['name'] = 'Alice';
+                    view.rows[1]['id'] = 2;
+                    view.rows[1]['name'] = 'Bob';
+                    
+                    // MetaView 스키마 쓰기 : opt = 2
+                    const schema = view.write(2);
+                    console.log(schema);
+                    // Out: 
+                    // {
+                    //     "columns": {
+                    //         "id": {
+                    //             "default": 0,
+                    //             "caption": "Identifier",
+                    //             "required": true
+                    //         },
+                    //         "name": {
+                    //             "default": "",
+                    //             "caption": "Full Name"
+                    //         }
+                    //         "$key": ["id", "name"]
+                    //     },
+                    //     "rows": [
+                    //         { "id": 1, "name": "Alice" },
+                    //         { "id": 2, "name": "Bob" }
+                    //     ]
+                    // }                    
+                });
+            });
+            describe("writeSchema()	", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('u_id', { default: 0, caption: 'Identifier', required: true });
+                    view.columns.add('name', { caption: 'Full Name' });
+                    
+                    // 스키마 쓰기
+                    const schema = view.writeSchema(2);
+                    
+                    console.log(schema);
+                    // Out: 
+                    // {
+                    //     "columns": {
+                    //         "u_id": {
+                    //             "default": 0,
+                    //             "caption": "Identifier",
+                    //             "required": true
+                    //         },
+                    //         "name": {
+                    //             "caption": "Full Name"
+                    //         },
+                    //         "$key": ["u_id", "name"]
+                    //     },
+                    // }                    
+                });
+            });
+            describe("writeData()", () => {
+                it("- 예제", () => {
+                    const view = new MetaView('v1');
+
+                    // 컬럼 추가
+                    view.columns.add('u_id');
+                    view.columns.add('name');
+                    
+                    view.rows.add({ u_id: 1, name: 'Alice' });
+                    view.rows.add({ u_id: 2, name: 'Bob' });
+                    
+                    // 데이터 쓰기 : opt = 2
+                    const data = view.writeData(2);
+                    
+                    console.log(data);
+                    // Out:
+                    // {
+                    //     "rows": [
+                    //         { "u_id": 1, "name": "Alice" },
+                    //         { "u_id": 2, "name": "Bob" }
+                    //     ]
+                    // }                    
+                });
+            });
+            describe("read()", () => {
+                it("- MetaView 객체에서 읽기", () => {
+                    const view1 = new MetaView('v1');
+                    const view2 = new MetaView('v2', view1); // 전체 참조 뷰
+                    const view3 = new MetaView('v3');
+                    
+                    // 컬럼 추가
+                    view1.columns.add('c1');
+                    view2.columns.add('c2');
+                    view3.columns.add('c3', view2.columns); // 컬럼 일부 참조
+                    
+                    // 스키마를 읽을 뷰 생성
+                    const v1 = new MetaView('view1');
+                    const v2 = new MetaView('view2');
+                    const v3 = new MetaView('view3');
+                    
+                    // 컬럼 및 데이터 읽기 : opt = 3
+                    v1.read(view1);
+                    v2.read(view2);
+                    v3.read(view3);
+                    
+                    console.log(v1.columns.count); // Out: 3
+                    console.log(v2.columns.count); // Out: 2
+                    console.log(v3.columns.count); // Out: 1                    
+                });
+                it("- 스키마 객체 읽기 ", () => {
+                    const view = new MetaView('v1');
+                    const schema = {
+                        columns: { c1: 'D1', c2: 'D2'},
+                        rows: [{ c1: 'R1', c2: 'R2' }]
+                    };
+                    
+                    // 컬럼 및 데이터 읽기 : opt = 3
+                    view.read(schema);
+                    
+                    console.log(view.columns.count); // Out: 2
+                    console.log(view.rows.count);    // Out: 1                    
+                });
+            });
+            describe("readSchema()", () => {
+                it("- 컬럼 정보 읽기", () => {
+                    const view = new MetaView('v1');
+                    const schema = {
+                        columns: { c1: 'D1', c2: 'D2' }
+                    };
+                    
+                    // 컬럼 읽기
+                    view.readSchema(schema);
+                    
+                    console.log(view.columns.count);       // Out: 2
+                    console.log(view.columns['c1'].value); // Out: 'D1'
+                    console.log(view.columns['c2'].value); // Out: 'D2'                    
+                });
+                it("- 읽기 순서 변경", () => {
+                    
+                });
+            });
+            describe("readData()", () => {
+                it("- 행 데이터 읽기", () => {
+                    const view = new MetaView('v1');
+                    const schema = {
+                        columns: { c1: 'D1', c2: 'D2' }
+                    };
+                    
+                    // 컬럼 읽기
+                    view.readSchema(schema);
+                    
+                    console.log(view.columns.count);       // Out: 2
+                    console.log(view.columns['c1'].value); // Out: 'D1'
+                    console.log(view.columns['c2'].value); // Out: 'D2'                    
+                });
+                it("- 컬럼없는 데이터 읽기", () => {
+                    const view = new MetaView('t1');
+                    const schema = {
+                        columns: {
+                            $key: ['c2', 'c1'],  // 키 위치 변경
+                            c1: { caption: 'Column1' }, 
+                            c2: { caption: 'Column2' }
+                        }
+                    };
+                    
+                    view.readSchema(schema);
+                    
+                    console.log(view.columns.count);  // Out: 2
+                    console.log(view.columns['c2'].caption); // Out: 'Column2'
+                    console.log(view.columns['c1'].caption); // Out: 'Column1'
+                    console.log(view.columns[0].caption); // Out: 'Column2'
+                    console.log(view.columns[1].caption); // Out: 'Column1'                    
+                });
+            });
+        });
+        describe("PropertyCollection 클래스", () => {
+            describe("_owner", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("_elemTypes", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("_list", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("count", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("add()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("clear()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("exist()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("remove()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("removeAt()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("contains()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("indexOf()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("keyToIndex()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("indexToKey()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("map()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("filter()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("reduce()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("find()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("findIndex()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("forEach()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("some()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("every()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onAdd", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onAdded", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onRemove", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onRemoved", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onClear", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("onCleared", () => {
+                it("- 예제", () => {
+
+                });
+            });
+        });
+        describe("MetaObject 클래스", () => {
+            describe("_guid", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("_type", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("equal()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("getTypes()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("instanceOf()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("getObject()", () => {
+                it("- 예제", () => {
+
+                });
+            });
+            describe("setObject()", () => {
+                it("- 예제", () => {
+
                 });
             });
         });
