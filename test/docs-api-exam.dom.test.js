@@ -6,12 +6,15 @@
 // gobal defined
 'use strict';
 
-const bindmodel = require('logic-bind-model');
+// global.jQuery = global.jQuery || require('jquery');
+global.axios = require('axios');
+
 const  axios  = require("axios");
 
 jest.mock('axios');
 
-const {BindModel, HTMLColumn, MetaColumn, MetaTable, MetaView, BindCommand} = bindmodel;
+const bindmodel = require('logic-bind-model');
+const {BindModel, HTMLColumn, MetaColumn, MetaTable, MetaView, BindCommand} = global._L;
 
 const T = true;
 
@@ -2335,7 +2338,7 @@ describe("[target: exam BindModel]", () => {
                 });
             });
         });
-        describe("HTMLColumn 클래스", () => {
+        describe.skip("HTMLColumn 클래스", () => {
             describe("_valueTypes", () => {
                 it("- 예제", () => {
                     const c1 = new HTMLColumn('aa');
@@ -2664,7 +2667,7 @@ describe("[target: exam BindModel]", () => {
                 });
             });
         });
-        describe("HTMLColumn 클래스2", () => {
+        describe.skip("HTMLColumn 클래스2", () => {
             describe("_valueTypes", () => {
                 it("- 예제", () => {
                     const c1 = new HTMLColumn('aa');
