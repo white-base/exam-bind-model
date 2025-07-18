@@ -9,7 +9,7 @@ export default class NoticeAdminService {
 
         this.command = {
             read:       {
-                outputOption: 3,
+                outputOption: 'VIEW',
             },
             update:     {
                 cbBind(bind, cmd, setup) {
@@ -31,7 +31,7 @@ export default class NoticeAdminService {
                 }
             },
             list:       {
-                outputOption: 1,
+                outputOption: "ALL",
             }
         };
 

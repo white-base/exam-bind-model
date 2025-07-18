@@ -1,3 +1,4 @@
+import BindModel from 'https://unpkg.com/logic-bind-model/dist/bind-model.esm.js';
 import React, { Component } from 'https://esm.sh/react';
 import NoticeList from './NoticeList.js';
 import NoticeForm from './NoticeForm.js';
@@ -7,7 +8,7 @@ export default class NoticeAdminPage extends Component {
   constructor(props) {
     super(props);
     
-    this.bm = new _L.BindModel(new NoticeAdminService(this));  
+    this.bm = new BindModel(new NoticeAdminService(this));  
     this.bm.url = '/notice/data/list.json';
     this.state = { selectedNotice: null };
   }

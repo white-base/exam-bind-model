@@ -57,7 +57,7 @@ export default function NoticeAdminPage() {
     }
 
     try {
-      const response = await axios.put(`data/list/${selectedNotice.ntc_idx}`, formData);
+      const response = await axios.put(`/notice/data/list/${selectedNotice.ntc_idx}`, formData);
       console.log('Notice updated successfully:', response.data);
       fetchNotices();
       setSelectedNotice(null);
@@ -68,7 +68,7 @@ export default function NoticeAdminPage() {
 
   const handleDelete = async () => {
     try {
-      const response = await axios.delete(`data/list/${selectedNotice.ntc_idx}`);
+      const response = await axios.delete(`/notice/data/list/${selectedNotice.ntc_idx}`);
       console.log('Notice deleted successfully:', response.data);
       fetchNotices();
       setSelectedNotice(null);

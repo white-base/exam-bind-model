@@ -11,8 +11,8 @@ class NoticeAdminService extends BaseNoticeService {
             create:     {
             },
             read:       {
-                outputOption: 3,
-                cbBegin(cmd) { 
+                outputOption: 'VIEW',
+                cbBegin(model, cmd) { 
                     cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
@@ -40,15 +40,31 @@ class NoticeAdminService extends BaseNoticeService {
                 }
             },
             list:       {
-                outputOption: 1,
-                cbBegin(cmd) {
+                outputOption: 'ALL',
+                cbBegin(model, cmd) {
                     cmd._model.columns._area_form.value = 'd-none';
                 },
                 cbOutput(outs, cmd, res) {
+                    Handlebars.registerHelper('translateActive', function (code) {
+                        if (code === 'S') return 'Standby';
+                        if (code === 'A') return 'Activation';
+                        if (code === 'H') return 'hidden';
+                        return '';
+                    });
                     if (_template === null) {
                         _template = Handlebars.compile( _this.bindModel.columns['_area_temp'].value ); 
                     }
                     _this.bindModel.columns['_area_tbody'].value   = _template(res.data);
+
+                    document.getElementById('area-tbody').addEventListener('click', function (e) {
+                        const target = e.target.closest('.btnNormal');
+                        if (target && target.dataset.index) {
+                            const index = parseInt(target.dataset.index, 10);
+                            if (!isNaN(index)) {
+                            cmd._model.fn.procRead(index);
+                            }
+                        }
+                    });
                 },
             }
         };

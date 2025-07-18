@@ -27,12 +27,12 @@
 
     <!-- Template -->
     <script id="area-temp" type="text/x-handlebars-template">
-      {{#rows}}
+      {{#each this}}
       <tr>
-        <td><a href="javascript:bm.fn.procRead('{{@index}}');" class='btnNormal'>{{title}}</a></td>
+        <td><a href="#" class="btnNormal" data-index="{{@index}}">{{title}}</a></td>
         <td>{{create_dt}}</td>			            	
       </tr>
-      {{/rows}} 
+      {{/each}} 
     </script>
 
   </table>
@@ -53,7 +53,8 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
-<script src="https://unpkg.com/logic-bind-model/dist/bindmodel.pack.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+<!-- <script src="https://unpkg.com/logic-bind-model/dist/bind-model.js"></script> -->
 <script src="./front-App.js" type="module"></script>
 <!-- 
 <script src="service/base-svc.js"></script>

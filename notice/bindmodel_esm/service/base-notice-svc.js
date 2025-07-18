@@ -6,7 +6,7 @@ class BaseNoticeService {
             // misc
             _area_temp: { selector: { key: `#area-temp${_SUFF}`,    type: 'html' } },
             _area_tbody:{ selector: { key: `#area-tbody${_SUFF}`,   type: 'html' } },
-            _area_form: { selector: { key: `#class-form${_SUFF}`,   type: 'prop.class' } },
+            _area_form: { selector: { key: `#class-form${_SUFF}`,   type: 'attr.class' } },
             _index:     0,
             // valid, bind, output
             ntc_idx:        '',
