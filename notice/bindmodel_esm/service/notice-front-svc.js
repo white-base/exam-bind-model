@@ -8,16 +8,14 @@ class NoticeFrontService extends BaseNoticeService {
         var _template   = null;     // Handlebars template
 
         this.command = {
-            read:       {
+            read: {
                 outputOption: 'VIEW',
                 cbBegin(model, cmd) { 
-                    // var ntc_idx= cmd._model.columns['ntc_idx'].value;
-                    // cmd.url = `/notice/data/read${ntc_idx}.json`;
                     cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
-            },  
-            list:{
+            },
+            list: {
                 outputOption: 'ALL',
                 cbBegin(model, cmd) {
                     cmd._model.columns._area_form.value = 'd-none'; // form hidden

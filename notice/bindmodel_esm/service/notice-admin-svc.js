@@ -8,16 +8,16 @@ class NoticeAdminService extends BaseNoticeService {
         var _template   = null;     // Handlebars template
 
         this.command = {
-            create:     {
+            create: {
             },
-            read:       {
+            read: {
                 outputOption: 'VIEW',
                 cbBegin(model, cmd) { 
                     cmd.outputOption.index = Number(cmd._model.items._index);
                     cmd._model.columns._area_form.value = '';  // form show
                 },
             },
-            update:     {
+            update: {
                 cbBind(bind, cmd, setup) {
                     console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
                 },
@@ -25,7 +25,7 @@ class NoticeAdminService extends BaseNoticeService {
                     if (res) alert('It has been modified.');
                 }
             },
-            delete:     {
+            delete: {
                 cbValid(valid, cmd) { 
                     if (confirm('Are you sure you want to delete it?')) return true;
                 },
@@ -39,7 +39,7 @@ class NoticeAdminService extends BaseNoticeService {
                     }
                 }
             },
-            list:       {
+            list: {
                 outputOption: 'ALL',
                 cbBegin(model, cmd) {
                     cmd._model.columns._area_form.value = 'd-none';
