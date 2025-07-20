@@ -4,15 +4,13 @@ import NoticeFrontService from './service/list-svc.js';
 const bm = new BindModel(new NoticeFrontService());
 var _template = null; // Handlebars template
 
-// bm.url = './data/list.json'; // base url
-
 // scroll event handler
 window.addEventListener('scroll', function () {
   var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
   var windowHeight = window.innerHeight;
   var documentHeight = document.documentElement.scrollHeight;
 
-  if (scrollTop + windowHeight >= documentHeight - 50) {
+  if (scrollTop + windowHeight >= documentHeight - 50 || hasVerticalScrollbar()) {
     var page = bm.cols['page_count'].value;
     var rowTotal = bm.cols['row_total'].value;
     var pageSize = bm.cols['page_size'].value;
@@ -26,7 +24,17 @@ window.addEventListener('scroll', function () {
   }
 });
 
+bm.cmd['list'].cbEnd = function (status, cmd, res) {
+  if (!hasVerticalScrollbar()) {
+    bm.cols['page_count'].value += 1; // page increment
+    bm.cmd['list'].execute();
+  } 
+};
 
 $(document).ready(function () {
   bm.cmd['list'].execute();
 });
+
+function hasVerticalScrollbar() {
+  return document.documentElement.scrollHeight > window.innerHeight;
+}

@@ -21,7 +21,7 @@ class BaseNoticeService {
                     $(`input[name=top_yn${_SUFF}]`).prop('checked', val == 'Y' ? true : false);
                 },
                 getFilter(val) {
-                    return $(`input[name=top_yn${_SUFF}]:checked`).val();
+                    return $(`input[name=top_yn${_SUFF}]:checked`).val() || 'N';
                 }
             },
             active_cd:  {

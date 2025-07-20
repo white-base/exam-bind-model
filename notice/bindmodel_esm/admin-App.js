@@ -11,6 +11,5 @@ $('#btn_Delete').click(()=> bm.cmd['delete'].execute());
 $('#btn_List').click(()=> bm.cmd['list'].execute());
 
 $(document).ready(function () {
-    bm.init();
     bm.cmd['list'].execute();
 });
