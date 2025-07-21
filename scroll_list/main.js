@@ -29,6 +29,16 @@ window.addEventListener('scroll', function () {
   }
 });
 
+$(document).on('click', '.sortable', function () {
+  var sortKey = $(this).data('sort');
+  var sortable = bm.cols['sortable'].value;
+  
+  bm.cols['sortable'].value = sortable === 'asc' ? 'desc' : 'asc';
+  bm.cols['sort_column'].value = sortKey;
+  bm.fn.procReset();
+  bm.cmd['list'].execute();
+});
+
 bm.cmd['list'].cbEnd = function (status, cmd, res) {
   if (!hasVerticalScrollbar() && !isLastPage()) {
     bm.cols['page_count'].value += 1;

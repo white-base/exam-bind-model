@@ -12,21 +12,36 @@ class NoticeFrontService {
       page_size: 10,
       page_count: 1,
       row_total: 0,
+      sort_column: 'create_dt',
+      sortable: 'asc',
       ntc_idx: '',
+    };
+    this.fn = {
+        procReset() { 
+            _this.bindModel.items._index = 0;
+            _this.bindModel.cols['page_count'].value = 1;
+            _this.bindModel.cols['_area_tbody'].value = '';
+        }
     };
 
     this.command = {
       list: {
         outputOption: 'ALL',
         cbBegin(model, cmd) {
+            const MAX_PAGE = 5; // Assuming a maximum of 5 pages for this example
+            var sortable = cmd._model.cols['sortable'].value;
             var page = cmd._model.cols['page_count'].value;
+
+            page = sortable === 'asc' ? page : MAX_PAGE - page;
             cmd.url = `/scroll_list/data/list_${page}.json`;
         },
         cbBind(bind, cmd, setup) {
             console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
         },
         cbResult(data, cmd, res) {
-          cmd._model.cols['row_total'].value = data.row_total;
+            var sortable = cmd._model.cols['sortable'].value;
+            cmd._model.cols['row_total'].value = data.row_total;
+            return sortable === 'asc' ? data.rows : data.rows.reverse(); // Reverse the order if descending
         },
         cbOutput(outs, cmd, res) {
             if (_template === null) {
@@ -45,6 +60,8 @@ class NoticeFrontService {
       _area_tbody: { list: 'misc' },
       page_size: { list: 'bind' },
       page_count: { list: 'bind' },
+      sort_column: { list: 'bind' },
+      sortable: { list: 'bind' },
       row_total: { list: 'misc' },
     };
   }
