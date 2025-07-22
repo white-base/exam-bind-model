@@ -8,8 +8,7 @@ class NoticeAdminService extends BaseNoticeService {
         var _template   = null;     // Handlebars template
 
         this.command = {
-            create: {
-            },
+            create: {},
             read: {
                 outputOption: 'VIEW',
                 cbBegin(model, cmd) { 
