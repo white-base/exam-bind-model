@@ -6,8 +6,8 @@ var bm = new BindModel(new NoticeFrontService());
 bm.url = '/notice/data/list.json';  // base url
 
 // event handlers
-$('#btn_List').click(()=> bm.cmd['list'].execute());
+$('#btn_List').click(()=> bm.command['list'].execute());
 
 $(document).ready(function () {
-    bm.cmd['list'].execute();
+    bm.command['list'].execute();
 });
