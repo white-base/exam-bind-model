@@ -6,10 +6,10 @@ var bm = new BindModel(new NoticeAdminService());
 bm.url = '/notice/data/list.json';  // base url
 
 // event handlers
-$('#btn_Update').click(()=> bm.cmd['update'].execute());
-$('#btn_Delete').click(()=> bm.cmd['delete'].execute());
-$('#btn_List').click(()=> bm.cmd['list'].execute());
+$('#btn_Update').click(()=> bm.cmd['update'].exec());
+$('#btn_Delete').click(()=> bm.cmd['delete'].exec());
+$('#btn_List').click(()=> bm.cmd['list'].exec());
 
 $(document).ready(function () {
-    bm.cmd['list'].execute();
+    bm.cmd['list'].exec();
 });
