@@ -7,19 +7,29 @@ class NoticeAdminService extends BaseNoticeService {
         var _this       = this;
         var _template   = null;     // Handlebars template
 
+        this.cbBaseBind = function (bind, cmd, setup) {
+            console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
+        }
         this.command = {
-            create: {},
+            create: {
+                cbEnd(status, cmd, res) {
+                    if (res) {
+                        alert('The post has been created.');
+                        _this.bindModel.cmd['list'].execute();
+                    }
+                }
+            },
             read: {
                 outputOption: 'VIEW',
                 cbBegin(model, cmd) { 
                     cmd.outputOption.index = Number(cmd._model.items._index);
-                    cmd._model.columns._area_form.value = '';  // form show
+                    model.columns['_area_form'].value = '';  // form show
+                    model.columns['_area_edit'].value = '';  // button show
+                    model.columns['_area_create'].value = 'd-none';
+                    model.columns['_area_button'].value = 'd-none';
                 },
             },
             update: {
-                cbBind(bind, cmd, setup) {
-                    console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
-                },
                 cbEnd(status, cmd, res) {
                     if (res) alert('It has been modified.');
                 }
@@ -28,20 +38,19 @@ class NoticeAdminService extends BaseNoticeService {
                 cbValid(valid, cmd) { 
                     if (confirm('Are you sure you want to delete it?')) return true;
                 },
-                cbBind(bind, cmd, setup) {
-                    console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
-                },
                 cbEnd(status, cmd, res) {
                     if (res) {
                         alert('The post has been deleted.');
-                        _this.bindModel.cmd['list'].execute();
+                        cmd._model.command['list'].execute();
                     }
                 }
             },
             list: {
                 outputOption: 'ALL',
                 cbBegin(model, cmd) {
-                    cmd._model.columns._area_form.value = 'd-none';
+                    model.columns['_area_form'].value = 'd-none';
+                    model.columns['_area_button'].value = '';
+
                 },
                 cbOutput(outs, cmd, res) {
                     Handlebars.registerHelper('translateActive', function (code) {
@@ -69,17 +78,19 @@ class NoticeAdminService extends BaseNoticeService {
         };
 
         this.mapping = {
-            _area_temp:     { list:     'misc' },
-            _area_tbody:    { list:     'misc' },
-            _area_form:     { list:     'misc' },
-            ntc_idx:        { read:     'bind',     update:  'bind',               delete:     'bind' },
-            title:          { read:     'output',   update:  ['valid', 'bind'], },
-            contents:       { read:     'output',   update:  'bind' },
-            top_yn:         { read:     'output',   update:  ['valid', 'bind'], },
-            active_cd:      { read:     'output',   update:  ['valid', 'bind'], },
-            create_dt:      { read:     'output' },
+            _area_temp:     { list: 'misc' },
+            _area_tbody:    { list: 'misc' },
+            _area_form:     { list: 'misc' },
+            _area_edit:     { list: 'misc' },
+            _area_create:   { list: 'misc' },
+            _area_button:   { list: 'misc' },
+            ntc_idx:        { read: ['bind', 'output'],    update: 'bind',  delete: 'bind' },
+            title:          { create: ['valid', 'bind'],   read: 'output',  update: ['valid', 'bind'], },
+            contents:       { create: 'bind',              read: 'output',  update: 'bind' },
+            top_yn:         { create: 'bind',              read: 'output',  update: ['valid', 'bind'], },
+            active_cd:      { create: 'bind',              read: 'output',  update: ['valid', 'bind'], },
+            create_dt:      { read: 'output' },
         };
-
     }    
 }
 

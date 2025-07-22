@@ -41,6 +41,7 @@
 
   <div id="class-form" class="d-none">
     <form>
+      <input type="hidden" id="ntc_idx">
       <div class="form-group">
         <label for="title">날짜</label>
         <p id="create_dt"></p>
@@ -75,10 +76,20 @@
             </div>        
         </div>
       </div>
+      <div id="edit-button" class="d-none">
+        <button type="submit" class="btn btn-primary mt-3" id="btn_Update">Update</button>
+        <button type="submit" class="btn btn-primary mt-3" id="btn_Delete">Delete</button>
+        <button type="submit" class="btn btn-primary mt-3" id="btn_List">List</button>
+      </div>
+      <div id="create-button" class="d-none">
+        <button type="reset" class="btn btn-primary mt-3" id="btn_Reset">Reset</button>
+        <button type="submit" class="btn btn-primary mt-3" id="btn_Save">Save</button>
+        <button type="submit" class="btn btn-primary mt-3" id="btn_Cancel">List</button>
+      </div>
     </form>
-    <button type="submit" class="btn btn-primary mt-3" id="btn_Update">Update</button>
-    <button type="submit" class="btn btn-primary mt-3" id="btn_Delete">Delete</button>
-    <button type="submit" class="btn btn-primary mt-3" id="btn_List">List</button>
+  </div>
+  <div id="from-button">
+    <button type="submit" class="btn btn-primary mt-3" id="btn_From">Create</button>
   </div>
 </div>
 
