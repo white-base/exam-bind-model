@@ -7,9 +7,9 @@ class BaseNoticeService {
             _area_temp: { selector: { key: `#area-temp${_SUFF}`,    type: 'html' } },
             _area_tbody: { selector: { key: `#area-tbody${_SUFF}`,   type: 'html' } },
             _area_form: { selector: { key: `#class-form${_SUFF}`,   type: 'attr.class' } },
-            _area_edit: { selector: { key: `#edit-button${_SUFF}`,   type: 'attr.class' } },
-            _area_create: { selector: { key: `#create-button${_SUFF}`,   type: 'attr.class' } },
-            _area_button: { selector: { key: `#from-button${_SUFF}`,   type: 'attr.class' } },
+            _area_btn_edit: { selector: { key: `#edit-button${_SUFF}`,   type: 'attr.class' } },
+            _area_btn_create: { selector: { key: `#create-button${_SUFF}`,   type: 'attr.class' } },
+            _area_btn_form: { selector: { key: `#form-button${_SUFF}`,   type: 'attr.class' } },
             _index:     0,
             // valid, bind, output
             ntc_idx:    { selector: { key: `#ntc_idx${_SUFF}`,   type: 'value' } },
@@ -44,12 +44,12 @@ class BaseNoticeService {
                 _this.bindModel.items._index = index;
                 _this.bindModel.command['read'].execute();
             },
-            createFrom() {
+            createFrom(form) {
+                document.getElementById(form).reset();
                 _this.bindModel.columns['_area_form'].value = '';
-                _this.bindModel.columns['_area_create'].value = '';
-                _this.bindModel.columns['_area_edit'].value = 'd-none';
-                _this.bindModel.columns['_area_button'].value = 'd-none';
-
+                _this.bindModel.columns['_area_btn_create'].value = '';
+                _this.bindModel.columns['_area_btn_edit'].value = 'd-none';
+                _this.bindModel.columns['_area_btn_form'].value = 'd-none';
             }
         };
     }
