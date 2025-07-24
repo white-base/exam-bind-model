@@ -31,7 +31,8 @@ class NoticeFrontService extends BaseNoticeService {
                         if (target && target.dataset.index) {
                             const index = parseInt(target.dataset.index, 10);
                             if (!isNaN(index)) {
-                            cmd._model.fn.procRead(index);
+                                _this.bindModel.items._index = index;
+                                _this.bindModel.command['read'].execute();
                             }
                         }
                     });

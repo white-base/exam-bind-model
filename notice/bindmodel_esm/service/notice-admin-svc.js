@@ -7,17 +7,16 @@ class NoticeAdminService extends BaseNoticeService {
         var _this       = this;
         var _template   = null;     // Handlebars template
 
-        // this.cbBaseBind = function (bind, cmd, setup) {
-        //     console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
-        // }
+        this.cbBaseBind = function (bind, cmd, setup) {
+            console.warn('Caution: Send to the test server, but the data is not reflected.', setup.data);
+        }
 
         this.command = {
             create: {
                 cbEnd(status, cmd, res) {
                     if (res) {
                         alert('The post has been created.');
-                        // _this.bindModel.cmd['list'].execute();
-                        cmd._model.command['list'].execute();
+                        _this.bindModel.cmd['list'].execute();
                     }
                 }
             },
@@ -69,7 +68,10 @@ class NoticeAdminService extends BaseNoticeService {
                         const target = e.target.closest('.btnNormal');
                         if (target && target.dataset.index) {
                             const index = parseInt(target.dataset.index, 10);
-                            if (!isNaN(index)) cmd._model.fn.procRead(index);
+                            if (!isNaN(index)) {
+                                _this.bindModel.items._index = index;
+                                _this.bindModel.command['read'].execute();
+                            }
                         }
                     });
                 },

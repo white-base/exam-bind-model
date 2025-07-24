@@ -40,10 +40,6 @@ class BaseNoticeService {
         };
         
         this.fn = {
-            procRead(index) { 
-                _this.bindModel.items._index = index;
-                _this.bindModel.command['read'].execute();
-            },
             createFrom(form) {
                 document.getElementById(form).reset();
                 _this.bindModel.columns['_area_form'].value = '';
