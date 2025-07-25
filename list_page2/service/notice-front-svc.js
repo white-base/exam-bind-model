@@ -37,7 +37,6 @@ class NoticeFrontService {
             _template = Handlebars.compile(_this.bindModel.columns['_area_temp'].value);
           }
           _this.bindModel.columns['_area_tbody'].value = _template(view.rows);
-          ss
         }
       },
     };
