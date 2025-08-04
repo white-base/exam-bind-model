@@ -14,6 +14,7 @@ const bm = new BindModel({
     },
     command: {
         create: {
+            url: './data/success',
             cbValid(valid, cmd) {
                 if (!valid) {
                     alert('Please fill out all required fields correctly.');
@@ -21,17 +22,24 @@ const bm = new BindModel({
                 }
                 return true;
             },
-            cbEnd(status, cmd, res) {
-                if (res) {
+            // cbBind(a,b,c) {
+            //     console.warn('Caution: This is a test submission, data will not be saved.', c.data);
+            // },
+            cbResult(data, cmd, res) {
+                if (data === true) {
                     alert('Form submitted successfully!');
                 } else {
                     alert('Form submission failed. Please try again.');
                 }
+                // console.warn('Caution: This is a test submission, data will not be saved.', data);
+            },
+            cbEnd(status, cmd, res) {
+                console.log('Submission ended with status:', status);
             }
         }
     },
 });
 
-bm.url = '/submit'; // Set the URL for form submission
+globalThis.bm = bm; // Make bm globally accessible
 
-$('#btn_Submit').click(() => bm.cmd['create'].execute());
+// $('#btn_Submit').click(() => bm.cmd['create'].execute());
