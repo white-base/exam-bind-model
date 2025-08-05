@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>폼 유효성 검사 예제</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h2>폼 유효성 검사 예제</h2>
+  <form class="row g-3 needs-validation" novalidate>
+    <!-- 텍스트 -->
+    <div class="col-md-6">
+      <label for="inputName" class="form-label">이름</label>
+      <input type="text" class="form-control" id="inputName" required>
+      <div class="invalid-feedback">
+        이름을 입력해주세요.
+      </div>
+    </div>
+
+    <!-- 이메일 -->
+    <div class="col-md-6">
+      <label for="inputEmail" class="form-label">이메일</label>
+      <input type="email" class="form-control" id="inputEmail" required>
+      <div class="invalid-feedback">
+        유효한 이메일 주소를 입력해주세요.
+      </div>
+    </div>
+
+    <!-- 비밀번호 -->
+    <div class="col-md-6">
+      <label for="inputPassword" class="form-label">비밀번호</label>
+      <input type="password" class="form-control" id="inputPassword" required minlength="6">
+      <div class="invalid-feedback">
+        비밀번호는 6자 이상이어야 합니다.
+      </div>
+    </div>
+
+    <!-- 셀렉트박스 -->
+    <div class="col-md-6">
+      <label for="inputState" class="form-label">국가</label>
+      <select class="form-select" id="inputState" required>
+        <option value="">선택...</option>
+        <option>대한민국</option>
+        <option>일본</option>
+        <option>미국</option>
+      </select>
+      <div class="invalid-feedback">
+        국가를 선택해주세요.
+      </div>
+    </div>
+
+    <!-- 라디오 버튼 -->
+    <div class="mb-3">
+      <label class="form-label d-block">성별</label>
+
+      <!-- 감싸는 div를 추가하여 피드백을 연결 -->
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" id="male" required value="male">
+        <label class="form-check-label" for="male">남성</label>
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="gender" id="female" required value="female">
+        <label class="form-check-label" for="female">여성</label>
+      </div>
+
+      <!-- 여기서 피드백 메시지는 input들과 같은 부모 안에 있어야 함 -->
+      <div class="invalid-feedback" id="gender-feedback">
+        성별을 선택해주세요.
+      </div>
+    </div>
+
+    <!-- 체크박스 -->
+    <div class="col-md-12">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="termsCheck" required>
+        <label class="form-check-label" for="termsCheck">
+          이용약관에 동의합니다.
+        </label>
+        <div class="invalid-feedback">
+          동의가 필요합니다.
+        </div>
+      </div>
+    </div>
+
+    <!-- 파일 업로드 -->
+    <div class="col-md-12">
+      <label for="formFile" class="form-label">파일 업로드</label>
+      <input class="form-control" type="file" id="formFile" required>
+      <div class="invalid-feedback">
+        파일을 선택해주세요.
+      </div>
+    </div>
+
+    <!-- 텍스트에어리어 -->
+    <div class="col-md-12">
+      <label for="message" class="form-label">메시지</label>
+      <textarea class="form-control" id="message" rows="3" required></textarea>
+      <div class="invalid-feedback">
+        메시지를 입력해주세요.
+      </div>
+    </div>
+
+    <!-- 제출 버튼 -->
+    <div class="col-12">
+      <button class="btn btn-primary" type="button" id="btn_Submit">제출</button>
+    </div>
+  </form>
+</div>
+
+<style>
+  #screen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.7); /* 밝은 흐림 효과 */
+    backdrop-filter: blur(4px); /* 흐림 효과 */
+    z-index: 9999;
+    display: none; /* 초기에는 숨김 */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #333;
+  }
+</style>
+<div id="screen-overlay">
+  처리 중입니다...
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script type="module" src="main.js"></script>
+<!-- 유효성 검사 스크립트 -->
+</body>
+</html>
