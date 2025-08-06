@@ -2,17 +2,20 @@ import BindModel from 'https://unpkg.com/logic-bind-model/dist/bind-model.esm.js
 
 const bm = new BindModel({
     items: {
-        names:      { required: true, selector: '#inputName' },
-        terms:      { required: true, selector: '#termsCheck' },
-        file:       { required: true, selector: '#formFile' },
-        message:    { required: true, selector: '#message' },
-        state:      { required: true, selector: '#inputState' },
+        _form:      { selector: { key: '.needs-validation' } },
+        _overlay:   { selector: { key: '#screen-overlay' } },
+        _gender_fb: { selector: { key: '#gender-feedback' } },
+        names:      { selector: '#inputName',   required: true },
+        terms:      { selector: '#termsCheck',  required: true },
+        file:       { selector: '#formFile',    required: true },
+        message:    { selector: '#message',     required: true },
+        state:      { selector: '#inputState',  required: true },
         email:      { 
-            required: true, selector: '#inputEmail',
+            selector: '#inputEmail', required: true,
             constraints: { regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: '유효한 이메일 주소를 입력하세요.' }
         },
         password:   { 
-            required: true, selector: '#inputPassword',
+            selector: '#inputPassword', required: true,
             constraints: { regex: /^.{6,}$/, msg: '비밀번호는 최소 6자 이상이어야 합니다.' }
          },
         gender:     {
@@ -28,26 +31,24 @@ const bm = new BindModel({
     },
     // Global, show screen overlay before execution
     onExecute: (model, cmd) => {
-          const overlay = document.getElementById('screen-overlay');
-            overlay.style.display = 'flex';
+        model.cols['_overlay'].element.style.display = 'flex';
     },
     // Global, hide screen overlay after execution
     onExecuted: (model, cmd) => {
-          const overlay = document.getElementById('screen-overlay');
-            overlay.style.display = 'none';
+        model.cols['_overlay'].element.style.display = 'none';
     },
     command: {
         create: {
             url: './data/success',
             config: { method: 'POST' },
             cbValid(valid, cmd) {
-                const form = document.querySelector('.needs-validation')
-                const genderFeedback = form.querySelector('#gender-feedback');
-                
+                const form      = cmd._model.cols['_form'].element;
+                const genderFB  = cmd._model.cols['_gender_fb'].element;
+
                 if (valid.cols.gender.value === '') {
-                    genderFeedback.style.display = 'block';
+                    genderFB.style.display = 'block';
                 } else {
-                    genderFeedback.style.display = 'none';
+                    genderFB.style.display = 'none';
                 }
 
                 if (form && !form.checkValidity()) {
@@ -58,7 +59,7 @@ const bm = new BindModel({
             },
             cbBind(bind, cmd, config) {
                 // FormData data preparation
-                const form = document.querySelector('.needs-validation')
+                const form = cmd._model.cols['_form'].element;
                 const data = new FormData(form);
 
                 for (var i = 0; i < bind.columns.count; i++) {
@@ -83,6 +84,9 @@ const bm = new BindModel({
         }
     },
     mapping: {
+        _form:      { create: 'misc' },
+        _overlay:   { create: 'misc' },
+        _gender_fb: { create: 'misc' },
         names:      { create: ['valid', 'bind'] },
         email:      { create: ['valid', 'bind'] },
         password:   { create: ['valid', 'bind'] },
