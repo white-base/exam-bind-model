@@ -2,98 +2,153 @@ import BindModel from 'https://unpkg.com/logic-bind-model/dist/bind-model.esm.js
 
 const bm = new BindModel({
     items: {
-        u_name:      { selector: '#inputName' },
+        _results:    { selector: '#cbResult' },
+        u_name:     { selector: '#inputName' },
         email:      { selector: '#inputEmail' },
     },
-    // global execute event
+    // model execute event
     onExecute: (model, cmd) => {
-        console.log('1 step : onExecute(global)');
+        const msg = `1 step : onExecute(global)\n`;
+        cmd._model.cols['_results'].value = msg;
+        console.log(msg);
     },
     onExecuted: (model, cmd) => {
-        console.log('5 step : onExecuted(global)');
+        const msg = `5 step : onExecuted(global)\n`;
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
 
+    // model execute callback
     cbBaseBegin(model, cmd) {
-        console.log('3-1 step : cbBaseBegin');
+        const msg = '3-1 step : cbBaseBegin\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
     cbBaseValid(valid, cmd) {
-        console.log('3-2 step : cbBaseValid');
+        const msg = '3-2 step : cbBaseValid\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
         return true;
     },
     cbBaseBind(bind, cmd, config) {
-        console.log('3-3 step : cbBaseBind');
+        const msg = '3-3 step : cbBaseBind\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
     cbBaseResult(data, cmd, res) {
-        console.log('3-4 step : cbBaseResult');
+        const msg = '3-4 step : cbBaseResult\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
     cbBaseOutput(outputs, cmd, res) {
-        console.log('3-5 step : cbBaseOutput, option == ("VIEW", "ALL", "PICK")');
+        const msg = '3-5 step : cbBaseOutput, option == ("VIEW", "ALL", "PICK")\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
     cbBaseEnd(status, cmd, res) {
-        console.log('3-6 step : cbBaseEnd');
+        const msg = '3-6 step : cbBaseEnd\n';
+        cmd._model.cols['_results'].value += msg;
+        console.log(msg);
     },
 
     command: {
         cmd1: {
             // command execute event
             onExecute: (model, cmd) => {
-                console.log('2 step : onExecute');
+                const msg = '2 step : onExecute\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
+                // console.log('2 step : onExecute');
             },
             onExecuted: (model, cmd) => {
-                console.log('4 step : onExecuted');
+                const msg = '4 step : onExecuted\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
+                // console.log('4 step : onExecuted');
             },
             
+            // command execute callback
             cbBegin(model, cmd) {
-                console.log('3-1 step : cbBegin');
+                const msg = '3-1 step : cbBegin\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             cbValid(valid, cmd) {
-                console.log('3-2 step : cbValid');
+                const msg = '3-2 step : cbValid\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
+                // console.warn('Caution: This is a test submission, data will not be saved');
                 return true;
             },
             cbBind(bind, cmd, config) {
-                console.log('3-3 step : cbBind');
+                const msg = '3-3 step : cbBind\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             cbResult(data, cmd, res) {
-                console.log('3-4 step : cbResult');
+                const msg = '3-4 step : cbResult\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             cbOutput(outputs, cmd, res) {
-                console.log('3-5 step : cbOutput, option == ("VIEW", "ALL", "PICK")');
+                const msg = '3-5 step : cbOutput, option == ("VIEW", "ALL", "PICK")\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             cbEnd(status, cmd, res) {
-                console.log('3-6 step : cbEnd');
+                const msg = '3-6 step : cbEnd\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
 
         },
         cmd2: {
+            // command execute event
             onExecute: (model, cmd) => {
-                console.log('2 step : onExecute');
+                const msg = '2 step : onExecute\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             onExecuted: (model, cmd) => {
-                console.log('4 step : onExecuted');
+                const msg = '4 step : onExecuted\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
         },
         cmd3: {
+            // command execute event
             onExecute: (model, cmd) => {
-                console.log('2 step : onExecute');
+                const msg = '2 step : onExecute\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             onExecuted: (model, cmd) => {
-                console.log('4 step : onExecuted');
+                const msg = '4 step : onExecuted\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
-
+            
+            // command execute event
             cbBegin(model, cmd) {
-                console.log('3-1 step : cbBegin');
+                const msg = '3-1 step : cbBegin\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
             },
             cbValid(valid, cmd) {
-                console.log('3-2 step : cbValid');
+                const msg = '3-2 step : cbValid\n';
+                cmd._model.cols['_results'].value += msg;
+                console.log(msg);
                 return true;
             },
         }
-
     },
 
     mapping: {
+        _results: { 
+            $all: 'misc'
+        },
         u_name:     { 
-            cmd1: '$all', 
+            cmd1: '$all',
             cmd2: '$all',
             cmd3: '$all',
         },
