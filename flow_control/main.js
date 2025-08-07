@@ -10,6 +10,9 @@ const bm = new BindModel({
     onExecute: (model, cmd) => {
         const msg = `1 step : onExecute(global)\n`;
         cmd._model.cols['_results'].value = msg;
+        cmd._model.cols['u_name'].value = '';
+        cmd._model.cols['email'].value = '';
+        console.clear();
         console.log(msg);
     },
     onExecuted: (model, cmd) => {
@@ -58,13 +61,11 @@ const bm = new BindModel({
                 const msg = '2 step : onExecute\n';
                 cmd._model.cols['_results'].value += msg;
                 console.log(msg);
-                // console.log('2 step : onExecute');
             },
             onExecuted: (model, cmd) => {
                 const msg = '4 step : onExecuted\n';
                 cmd._model.cols['_results'].value += msg;
                 console.log(msg);
-                // console.log('4 step : onExecuted');
             },
             
             // command execute callback
@@ -77,7 +78,6 @@ const bm = new BindModel({
                 const msg = '3-2 step : cbValid\n';
                 cmd._model.cols['_results'].value += msg;
                 console.log(msg);
-                // console.warn('Caution: This is a test submission, data will not be saved');
                 return true;
             },
             cbBind(bind, cmd, config) {
