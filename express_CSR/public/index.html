@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Manager</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input { margin-right: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>User Manager</h1>
+
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="number" id="age" placeholder="Age" required>
+    <button type="submit">Add User</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Age</th><th>Action</th></tr>
+    </thead>
+    <tbody id="userTableBody">
+      <!-- Users will be inserted here -->
+    </tbody>
+  </table>
+
+  <script>
+    const API_URL = '/api/users';
+    const userTableBody = document.getElementById('userTableBody');
+    const userForm = document.getElementById('userForm');
+    const nameInput = document.getElementById('name');
+    const ageInput = document.getElementById('age');
+
+    async function loadUsers() {
+      const res = await fetch(API_URL);
+      const users = await res.json();
+
+      userTableBody.innerHTML = '';
+      users.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${user.name}</td>
+          <td>${user.age}</td>
+          <td><button onclick="deleteUser(${user.id})">Delete</button></td>
+        `;
+        userTableBody.appendChild(tr);
+      });
+    }
+
+    async function addUser(event) {
+      event.preventDefault();
+      const name = nameInput.value.trim();
+      const age = parseInt(ageInput.value.trim());
+
+      if (!name || isNaN(age)) return alert('Name and age are required.');
+
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, age })
+      });
+
+      nameInput.value = '';
+      ageInput.value = '';
+      loadUsers();
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('Are you sure?')) return;
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      loadUsers();
+    }
+
+    userForm.addEventListener('submit', addUser);
+    loadUsers();
+  </script>
+</body>
+</html>

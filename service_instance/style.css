@@ -1,0 +1,41 @@
+  .table-box {
+  width: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.table-head {
+  background-color: #f1f3f5;
+  font-weight: bold;
+}
+
+.table-body {
+  background-color: #fff;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table-col {
+  padding: 10px;
+  flex: 1;
+}
+
+.col-title {
+  flex: 2;
+}
+
+.col-date {
+  flex: 1;
+}
+
+.btnNormal {
+  text-decoration: none;
+  color: #007bff;
+}
+.btnNormal:hover {
+  text-decoration: underline;
+}

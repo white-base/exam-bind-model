@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>BindModel Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div class="container mt-3">
+  <h2>서비스객체의 복수 인스턴스로 활용</h2>
+  <h5>table 태그를 사용해 데이터 표현</h5>
+  <p>Data is transmitted when modified or deleted from the test page, but it is not actually processed.</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Writer</th>
+      </tr>
+    </thead>
+    <tbody id="area-tbody-s1">
+      <tr>
+        <td colspan="2">There is no content.</td>
+      </tr>
+    </tbody>
+
+    <!-- Template -->
+    <script id="area-temp-s1" type="text/x-handlebars-template">
+      {{#each this}}
+      <tr>
+        <td><a href="#" class="btnNormal" data-index="{{@index}}">{{title}}</a></td>
+        <td>{{writer}}</td>			            	
+      </tr>
+      {{/each}} 
+    </script>
+  </table>
+
+  <h5>div 태그를 사용해 데이터 표현</h5>
+  <p>Data is transmitted when modified or deleted from the test page, but it is not actually processed.</p>
+  <link href="./style.css" rel="stylesheet">
+  <!-- 헤더 -->
+  <div class="table-box">
+    <div class="table-head">
+      <div class="table-row">
+        <div class="table-col col-title">Title</div>
+        <div class="table-col col-date">Writer</div>
+      </div>
+    </div>
+    <!-- 바디 -->
+    <div class="table-body" id="area-tbody-s2">
+      <div class="table-row">
+        <div class="table-col col-empty" colspan="2">There is no content.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template -->
+  <script id="area-temp-s2" type="text/x-handlebars-template">
+    {{#each this}}
+    <div class="table-row">
+      <div class="table-col col-title">
+        <a href="#" class="btnNormal" data-index="{{@index}}">{{title}}</a>
+      </div>
+      <div class="table-col col-date">{{writer}}</div>
+    </div>
+    {{/each}} 
+  </script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.8/handlebars.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
+<script src="main.js" type="module"></script>
+</body>
+</html>
+
+
+
+
+
+
