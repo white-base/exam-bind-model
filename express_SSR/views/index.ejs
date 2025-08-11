@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Manager (SSR)</title>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    input { margin-right: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>User Manager (SSR)</h1>
+
+  <form action="/add" method="POST">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="number" name="age" placeholder="Age" required>
+    <button type="submit">Add User</button>
+  </form>
+  <p>Total Users: <%= output.rows.count %></p>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Age</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <% if (output.rows.length === 0) { %>
+        <tr><td colspan="3">No users found.</td></tr>
+      <% } else { %>
+        <% output.rows.forEach(function(user) { %>
+          <tr>
+            <td><%= user.name %></td>
+            <td><%= user.age %></td>
+            <td>
+              <form action="/delete/<%= user.id %>" method="POST" style="display:inline">
+                <button type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } %>
+    </tbody>
+  </table>
+</body>
+</html>

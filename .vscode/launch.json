@@ -18,7 +18,15 @@
                 "<node_internals>/**"
             ],
             "program": "${file}"
-        },   
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Express SSR",
+            "program": "${workspaceFolder}/express_SSR/index.cjs",
+            "runtimeArgs": ["--inspect"],
+            "skipFiles": ["<node_internals>/**"]
+        }
 
     ]
 }
