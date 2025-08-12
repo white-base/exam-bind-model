@@ -35,6 +35,8 @@ app.use(bodyParser.json());
 // 📄 SSR 화면 렌더링
 app.get('/', (req, res) => {
   res.render('index', { output: bm.cmd.list.output });
+  // REVIEW: render 이전으로 이동 필요
+  // await bm.cmd.pick.execute();
 });
 
 // ➕ 사용자 추가
@@ -52,6 +54,10 @@ app.post('/add', (req, res) => {
   const id = bm.cmd.list.output.rows.count + 1;
   bm.cmd.list.output.read({rows: [{id: id, name: name, age: age}]})
   res.redirect('/');
+
+  // REVIEW:
+  // bm.User.insert({id: id, name: name, age: age});
+  // bm.commit();
 });
 
 // ❌ 사용자 삭제
@@ -61,6 +67,9 @@ app.post('/delete/:id', (req, res) => {
   const idx = bm.cmd.list.output.rows.findIndex((row) => row.id === userId);
   bm.cmd.list.output.rows.removeAt(idx);
   res.redirect('/');
+  // REVIEW:
+  // bm.User.delete({idx: userId});
+  // bm.commit();
 });
 
 app.listen(PORT, () => {
