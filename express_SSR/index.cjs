@@ -1,75 +1,67 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-//https://unpkg.com/logic-bind-model@1.1.13/dist/bind-model.node.cjs
-// const BindModel = require('https://unpkg.com/logic-bind-model/dist/bind-model.node.cjs');
-const {BindModel} = require('logic-bind-model');
+const express           = require('express');
+const bodyParser        = require('body-parser');
+const path              = require('path');
+const { SQLTable }      = require('logic-sql-entity');
+const { SqliteDialect } = require('kysely')
+const Database          = require('better-sqlite3')
 
-const app = express();
-const PORT = 3000;
+const app   = express();
+const PORT  = 3000;
+const table = new SQLTable('person');
 
-// Sample data (임시 메모리 DB)
-// let users = [
-//   { id: 1, name: 'Alicew', age: 25 },
-//   { id: 2, name: 'Bob', age: 30 }
-// ];
+const conn = {
+  dialect: new SqliteDialect({
+    database: new Database(':memory:')
+  })
+};
+table.connect = conn;
 
+if (true) { // 컬럼 정의 및 셈플 DB 데이터 (모률 영역) #######################
+  table.columns.add('id');    // TODO: add() 파라메터 객체 변경
+  table.columns.add('name');
+  table.columns.add('age');
 
-var bm = new BindModel();
-bm.setMapping({
-  id:      { list: '$all' },
-  name:   { list: '$all' },
-  age:      { list: '$all' }
-});
-
-bm.cmd.list.output.read({rows: [{id: 1, name: 'Alice', age: 250}, {id: 2, name: 'Bob', age: 300}]})
-
+  (async () => {
+    await table.db.schema
+      .createTable('person')
+      .addColumn('id', 'integer', (col) => col.primaryKey().autoIncrement())
+      .addColumn('name', 'text', (col) => col.notNull())
+      .addColumn('age', 'integer', (col) => col.notNull())
+      .execute();
+  
+    await table.insert({ name: '홍길동', age: 30 });
+    await table.insert({ name: '김로직', age: 40 });
+  })();
+}
 
 // EJS 설정
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // 📄 SSR 화면 렌더링
-app.get('/', (req, res) => {
-  res.render('index', { output: bm.cmd.list.output });
-  // REVIEW: render 이전으로 이동 필요
-  // await bm.cmd.pick.execute();
+app.get('/', async (req, res) => {
+  table.clear();    // TODO: 덮어쓰기 옵션 또는 기존 유지 확인 필요!
+  await table.select(1, 10);  // TODO: {} 객체 타입으로 변경, 콜백 함수 추가
+  res.render('index', { output: table });
 });
 
 // ➕ 사용자 추가
-app.post('/add', (req, res) => {
-  const { name, age } = req.body;
-  if (!name || !age) {
+app.post('/add', async (req, res) => {
+  const { name, age } = req.body; // TODO: insert() 바로 넣으면 제어 가능
+  if (!name || !age) {    // TODO: 유효성 검사 insert(), update() 추가 가능
     return res.status(400).send('Name and age required');
   }
-  // const newUser = {
-  //   id: users.length ? users[users.length - 1].id + 1 : 1,
-  //   name,
-  //   age: parseInt(age)
-  // };
-  // users.push(newUser);
-  const id = bm.cmd.list.output.rows.count + 1;
-  bm.cmd.list.output.read({rows: [{id: id, name: name, age: age}]})
+  await table.insert({ name: name, age: age });
   res.redirect('/');
-
-  // REVIEW:
-  // bm.User.insert({id: id, name: name, age: age});
-  // bm.commit();
 });
 
 // ❌ 사용자 삭제
-app.post('/delete/:id', (req, res) => {
-  const userId = parseInt(req.params.id);
-  // users = users.filter(u => u.id !== userId);
-  const idx = bm.cmd.list.output.rows.findIndex((row) => row.id === userId);
-  bm.cmd.list.output.rows.removeAt(idx);
+app.post('/delete/:id', async (req, res) => {
+  const userId = req.params.id;
+  await table.delete({ id: userId });
   res.redirect('/');
-  // REVIEW:
-  // bm.User.delete({idx: userId});
-  // bm.commit();
 });
 
 app.listen(PORT, () => {
