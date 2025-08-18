@@ -25,6 +25,13 @@ app.post('/add', async (req, res) => {
   res.redirect('/');
 });
 
+// 사용자 수정
+app.post('/update/:id', async (req, res) => {
+  const userId = req.params.id;
+  await table.update({ id: userId, ...req.body }); // POINT: req.body를 바로 사용
+  res.redirect('/');
+});
+
 // ❌ 사용자 삭제
 app.post('/delete/:id', async (req, res) => {
   const userId = req.params.id;
