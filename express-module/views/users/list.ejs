@@ -1,0 +1,7 @@
+<% layout('layout') -%>
+<h1><%= title %></h1>
+<ul>
+  <% users.forEach(function(u){ %>
+    <li><a href="/users/<%= u.id %>"><%= u.name %></a></li>
+  <% }) %>
+</ul>

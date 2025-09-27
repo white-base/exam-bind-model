@@ -1,0 +1,23 @@
+<% layout('layout') -%>
+<h1><%= title %></h1>
+
+<form method="post" action="/admin/products">
+  <div>
+    <label for="name">Product Name</label><br/>
+    <input type="text" id="name" name="name" required />
+  </div>
+
+  <div>
+    <label for="price">Price</label><br/>
+    <input type="number" id="price" name="price" required />
+  </div>
+
+  <div>
+    <label for="desc">Description</label><br/>
+    <textarea id="desc" name="desc"></textarea>
+  </div>
+
+  <button type="submit">Save</button>
+</form>
+
+<a href="/admin/products">← Back to list</a>
