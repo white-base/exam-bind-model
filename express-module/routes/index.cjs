@@ -3,9 +3,9 @@ var express = require('express');
 var router = express.Router();
 
 // 개별 라우터 import
-var homeRouter  = require('./home');
-var usersRouter = require('./users');
-var adminProductsRouter = require('./admin/products');
+var homeRouter  = require('./home.cjs');
+var usersRouter = require('./users.cjs');
+var adminProductsRouter = require('./admin/products.cjs');
 
 // 베이스 경로별로 하위 라우터 마운트
 router.use('/', homeRouter);                     // /

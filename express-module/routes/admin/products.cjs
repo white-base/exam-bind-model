@@ -1,7 +1,7 @@
 // routes/admin/products.js
 var express = require('express');
 var router = express.Router();
-var productsCtrl = require('../../controllers/products.controller');
+var productsCtrl = require('../../controllers/products.controller.cjs');
 
 // 목록
 router.get('/', productsCtrl.list);

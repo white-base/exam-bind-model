@@ -14,3 +14,5 @@ exports.detail = function(req, res) {
   var user = { id: id, name: 'User ' + id };
   res.render('users/detail', { title: 'User Detail', user: user });
 };
+
+controller 

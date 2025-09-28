@@ -1,7 +1,7 @@
 // routes/users.js
 var express = require('express');
 var router = express.Router();
-var usersCtrl = require('../controllers/users.controller');
+var usersCtrl = require('../controllers/users.controller.cjs');
 
 // 사용자 목록
 router.get('/', usersCtrl.list);

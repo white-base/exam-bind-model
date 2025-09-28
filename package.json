@@ -9,7 +9,7 @@
     "serve": "npx serve",
     "express": "node express_crud/index.cjs",
     "express-ssr": "node express_ssr/index.cjs",
-    "express-module": "node express_module/app.cjs"
+    "express-module": "node express-module/app.cjs"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,7 @@
     "cors": "^2.8.5",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-ejs-layouts": "^2.5.1",
     "kysely": "^0.28.5",
     "logic-bind-model": "github:white-base/bind-model",
     "logic-sql-entity": "github:white-base/logic-sql-entity",
